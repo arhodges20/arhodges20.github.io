@@ -11,3 +11,4 @@ Welcome to my personal documentation site. Here, you'll find:
 - [Homelab](notes/homelab.md) - My home server setup
 
 Check out my GitHub: [arhodges20](https://github.com/arhodges20)
+Check out my LinkedIn: [Aydan Hodges](https://www.linkedin.com/in/aydan-hodges/)
