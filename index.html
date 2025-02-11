@@ -4,46 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Aydan Hodges - Portfolio & Documentation</title>
-    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="grayscale-theme/vendor/bootstrap/css/bootstrap.min.css">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="grayscale-theme/vendor/fontawesome-free/css/all.min.css">
+
+    <!-- Grayscale Theme Styles -->
+    <link rel="stylesheet" href="grayscale-theme/css/grayscale.min.css">
 </head>
 <body>
 
     <!-- Navigation -->
-    <nav>
-        <ul>
-            <li><a href="#about">About</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="https://github.com/arhodges20">GitHub</a></li>
-            <li><a href="https://www.linkedin.com/in/aydan-hodges/">LinkedIn</a></li>
-        </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Aydan Hodges</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20">GitHub</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="hero">
-        <h1>Aydan Hodges</h1>
-        <p>Portfolio & Documentation</p>
+    <header class="masthead">
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <h1 class="text-white">Aydan Hodges</h1>
+                <p class="text-white-50">Portfolio & Documentation</p>
+            </div>
+        </div>
     </header>
 
     <!-- About Section -->
-    <section id="about">
-        <h2>About Me</h2>
-        <p>Welcome to my personal documentation site. I specialize in cybersecurity, networking, and automation.</p>
+    <section id="about" class="bg-light">
+        <div class="container text-center">
+            <h2>About Me</h2>
+            <p>Welcome to my personal documentation site.</p>
+        </div>
     </section>
 
     <!-- Projects Section -->
     <section id="projects">
-        <h2>Projects</h2>
-        <ul>
-            <li><a href="projects/panoptic.html">Panoptic</a> - Security monitoring tool</li>
-            <li><a href="projects/trojan-eyes.html">Trojan Eyes</a> - Raspberry Pi surveillance system</li>
-            <li><a href="notes/homelab.html">Homelab</a> - My home server setup</li>
-        </ul>
+        <div class="container text-center">
+            <h2>Projects</h2>
+            <ul class="list-unstyled">
+                <li><a href="projects/panoptic.html">Panoptic</a> - Security monitoring tool</li>
+                <li><a href="projects/trojan-eyes.html">Trojan Eyes</a> - Raspberry Pi surveillance system</li>
+                <li><a href="notes/homelab.html">Homelab</a> - My home server setup</li>
+            </ul>
+        </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <p>Check out my <a href="https://github.com/arhodges20">GitHub</a> & <a href="https://www.linkedin.com/in/aydan-hodges/">LinkedIn</a></p>
+    <footer class="bg-dark text-white text-center py-3">
+        <p>Check out my <a href="https://github.com/arhodges20" class="text-white">GitHub</a> & <a href="https://www.linkedin.com/in/aydan-hodges/" class="text-white">LinkedIn</a></p>
     </footer>
 
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="grayscale-theme/vendor/jquery/jquery.min.js"></script>
+    <script src="grayscale-theme/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
