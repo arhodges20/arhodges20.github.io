@@ -1,7 +1,7 @@
 # Portfolio & Documentation
 
 Welcome to my personal documentation site. Here, you'll find:
-- 🚀 My **Projects** (Panoptic, Trojan Eyes, Homelab)
+- 🚀 My **Projects** (Panoptic, Trojan Eyes, Homelab, etc.)
 - 🔍 **Cybersecurity Notes** and reference materials
 - 📓 Documentation on my **homelab setup**
 
@@ -11,4 +11,5 @@ Welcome to my personal documentation site. Here, you'll find:
 - [Homelab](notes/homelab.md) - My home server setup
 
 Check out my GitHub: [arhodges20](https://github.com/arhodges20)
+
 Check out my LinkedIn: [Aydan Hodges](https://www.linkedin.com/in/aydan-hodges/)
