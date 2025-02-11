@@ -1,4 +1,4 @@
-# Aydan Hodges - Portfolio & Documentation
+# Portfolio & Documentation
 
 Welcome to my personal documentation site. Here, you'll find:
 - 🚀 My **Projects** (Panoptic, Trojan Eyes, Homelab)
