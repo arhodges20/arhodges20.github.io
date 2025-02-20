@@ -4,22 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Aydan Hodges - Portfolio & Documentation</title>
+    <title>Terraform Automation - Aydan Hodges</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="grayscale-theme/dist/css/bootstrap.min.css">
 
     <!-- Grayscale Theme Styles -->
+    <link rel="stylesheet" href="grayscale-theme/dist/css/grayscale.min.css">
     <link rel="stylesheet" href="grayscale-theme/dist/css/styles.css">
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KXF8Y0DEH6');
-    </script>
 
     <!-- Favicon Icon -->
     <link rel="icon" href="images/white-cross.png" type="image/png">
@@ -39,8 +31,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#terraform">Terraform</a></li>
                     <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20">GitHub</a></li>
                     <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/">LinkedIn</a></li>
                 </ul>
@@ -52,31 +44,36 @@
     <header class="masthead">
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
-                <h1 class="text-white">Aydan Hodges</h1>
-                <p class="text-white-50">Portfolio & Documentation</p>
+                <h1 class="text-white">Terraform Automation</h1>
+                <p class="text-white-50">Automating My Homelab Infrastructure</p>
             </div>
         </div>
     </header>
 
-    <!-- About Section -->
-    <section id="about" class="bg-light">
+    <!-- Terraform Setup Section -->
+    <section id="terraform" class="bg-dark text-white">
         <div class="container text-center">
-            <h2>About Me</h2>
-            <p>IT/Cyber student graduating April 2025 - SOC Analyst - CySA+ & Sec+</p>
+            <h3>Terraform Automation for Homelab</h3>
+            <p>I've been using Terraform to automate various parts of my homelab setup. This includes provisioning virtual machines, managing networks, and automating other infrastructure-related tasks.</p>
+
+            <h4>Primary Uses for Terraform Automation</h4>
+            <ul class="list-unstyled">
+                <li>Provisioning VMs on Proxmox</li>
+                <li>Managing networking resources like VLANs and firewall rules</li>
+                <li>Automating updates and scaling of resources</li>
+            </ul>
+
+            <h4>GitHub Repository</h4>
+            <p>In the near future, check out my Terraform configurations and learn how I've automated my homelab setup. You can explore the repository and see the full Terraform code on my <a href="https://github.com/yourusername/terraform-homelab">GitHub repository</a>.</p>
+            
+            <h4>Future Plans</h4>
+            <p>I plan to expand the Terraform automation to include additional network components, automated backups, and golden images for the VMs I use and deploy in my environment. The goal is to make my homelab management as automated and efficient as possible.</p>
         </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects">
-        <div class="container text-center">
-            <h2>Projects</h2>
-            <ul class="list-unstyled">
-                <li><a href="homelab.html">Homelab</a> - My home lab setup</li>
-                <li><a href="terraform.html">Terraform</a> - Documentation on my use of terraform within my homelab</li>
-                <li><a href="https://github.com/arhodges20/setup-scripts">Setup Scripts</a> - Learning Git and automation scripting</li>
-                <li><a href="https://github.com/arhodges20/ITT-221">ITT-221 Scripts</a> - Scripts to automate assignments completed in ITT-221</li>
-            </ul>
-        </div>
+    <!-- View Repo Section -->
+    <section id="repo-link" class="text-center py-4">
+        <a href="https://github.com/yourusername/terraform-homelab" class="btn btn-primary">View Repo</a>
     </section>
 
     <!-- Footer -->
