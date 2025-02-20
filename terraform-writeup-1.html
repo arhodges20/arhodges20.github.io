@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Writeup 1: Preparing for Terraform Automation - Aydan Hodges</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="grayscale-theme/dist/css/bootstrap.min.css">
+
+    <!-- Grayscale Theme Styles -->
+    <link rel="stylesheet" href="grayscale-theme/dist/css/grayscale.min.css">
+    <link rel="stylesheet" href="grayscale-theme/dist/css/styles.css">
+
+    <!-- Favicon Icon -->
+    <link rel="icon" href="images/white-cross.png" type="image/png">
+
+    <style>
+        /* Custom CSS for centering the top section */
+        .container {
+            text-align: left;
+        }
+
+        .text-center {
+            text-align: center; /* Center the text in the top section */
+        }
+
+        ul {
+            padding-left: 20px; /* Add left padding for the bullet points */
+        }
+
+        ul ul {
+            padding-left: 20px; /* Indent the sub-bullet points */
+        }
+
+        .conclusion {
+            margin-top: 30px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
+                <img src="images/white-cross.png" alt="White Cross" style="height: 30px;"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#terraform">Terraform</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20">GitHub</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="masthead">
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <h1 class="text-white">Terraform - Writeup 1</h1>
+                <p class="text-white-50">Preparing for Terraform Automation</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Terraform Writeup Section -->
+    <section id="terraform-writeup" class="bg-dark text-white">
+        <div class="container text-center">
+            <h3>Writeup 1: Preparing for Terraform Automation</h3>
+            <p>In this writeup, I will be detailing the preparatory steps I took to get my homelab ready for automation using Terraform. These steps ensure a clean environment that can be managed effectively through code. I like to start simple and add on as I go, so for this first step I'm focusing on my controller to make future deployments easier in case I run into compatibility issues again.</p>
+        </div>
+
+        <div class="container">
+            <h4>Steps Taken</h4>
+            <ul>
+                <li>Reviewed and cleaned up my Unifi Controller VM to ensure it is minimal and usable for the future.
+                    <ul>
+                        <li>Disabled unused services to reduce overhead and improve security.</li>
+                        <li>Confirmed and optimized network configurations to ensure correct VLAN tagging and firewall rules.</li>
+                        <li>Cleared out unnecessary files and logs to minimize disk usage.</li>
+                        <li>Checked for updates and applied patches to ensure a stable environment.</li>
+                    </ul>
+                </li>
+                <li>Created a Proxmox template from the clean VM to use as a golden image for future deployments.
+                    <ul>
+                        <li>Set up template configuration in Proxmox to automate deployment.</li>
+                        <li>Tested the template by deploying a VM to ensure correct configuration.</li>
+                    </ul>
+                </li>
+                <li>Set up and initialized Terraform on Proxmox.
+                    <ul>
+                        <li>Installed Terraform on the Proxmox host and configured the provider for Proxmox.</li>
+                        <li>Validated the installation by running a simple test to ensure connectivity to the Proxmox API.</li>
+                    </ul>
+                </li>
+                <li>Configured remote access and state storage for Terraform to ensure that infrastructure changes can be tracked effectively.
+                    <ul>
+                        <li>Set up remote state storage on a secure backend (e.g., AWS S3 or similar).</li>
+                        <li>Ensured state locking was enabled to prevent concurrent modification issues.</li>
+                    </ul>
+                </li>
+            </ul>
+
+        </div>
+
+        <div class="container conclusion">
+            <p>Thanks for reading! I know it's a slow start, but I've already learned a lot, and I’ll continue posting progress write-ups as I keep working on this. Stay tuned for the next steps!</p>
+        </div>
+    </section>
+
+    <!-- View Repo Section -->
+    <section id="repo-link" class="text-center py-4">
+        <a href="https://github.com/yourusername/terraform-homelab" class="btn btn-primary">View Repo</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3">
+        <p>Check out my <a href="https://github.com/arhodges20" class="text-white">GitHub</a> & <a href="https://www.linkedin.com/in/aydan-hodges/" class="text-white">LinkedIn</a></p>
+    </footer>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap JS (Bundle version includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
