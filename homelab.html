@@ -130,14 +130,23 @@
             border-radius: 2px;
         }
 
+        .setup-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem 0;
+        }
         .setup-card {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 0;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
 
         .setup-card:hover {
@@ -229,6 +238,7 @@
 
             .setup-card {
                 padding: 1.5rem;
+                margin-bottom: 2rem;
             }
         }
     </style>
@@ -273,7 +283,7 @@
     <section id="setup" class="bg-dark text-white py-5">
         <div class="container">
             <h2 class="section-title text-center">Homelab Setup</h2>
-            <div class="row">
+            <div class="row setup-row">
                 <div class="col-md-6">
                     <div class="setup-card">
                         <h4><i class="fas fa-server me-2"></i>Server Infrastructure</h4>
@@ -303,7 +313,7 @@
             <!-- Network Topology -->
             <div class="network-topology text-center">
                 <h3>Network Topology</h3>
-                <img src="images/basic-topo.png" alt="Network Topology" class="img-fluid">
+                <img src="assets/images/basic-topo.png" alt="Network Topology" class="img-fluid">
             </div>
 
             <!-- View Repo Button -->
