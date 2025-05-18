@@ -4,50 +4,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Writeup 1: Preparing for Terraform Automation - Aydan Hodges</title>
+    <title>Terraform Writeup 1 - Aydan Hodges</title>
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="grayscale-theme/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Grayscale Theme Styles -->
-    <link rel="stylesheet" href="grayscale-theme/dist/css/grayscale.min.css">
-    <link rel="stylesheet" href="grayscale-theme/dist/css/styles.css">
-
-    <!-- Favicon Icon -->
-    <link rel="icon" href="images/white-cross.png" type="image/png">
-
+    <!-- Custom CSS -->
     <style>
-        /* Custom CSS for centering the top section */
-        .container {
-            text-align: left;
+        :root {
+            --primary-color: #2D3436;
+            --secondary-color: #636E72;
+            --accent-color: #00B894;
+            --dark-color: #1E272E;
+            --light-color: #F5F6FA;
+            --gradient-start: #2D3436;
+            --gradient-end: #1E272E;
         }
 
-        .text-center {
-            text-align: center; /* Center the text in the top section */
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+            background-color: var(--light-color);
+            color: var(--dark-color);
         }
 
-        ul {
-            padding-left: 20px; /* Add left padding for the bullet points */
+        .navbar {
+            background-color: rgba(30, 39, 46, 0.98) !important;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            padding: 1rem 0;
         }
 
-        ul ul {
-            padding-left: 20px; /* Indent the sub-bullet points */
+        .navbar-brand img {
+            transition: transform 0.3s ease;
+            height: 35px;
         }
 
-        .conclusion {
-            margin-top: 30px;
-            font-style: italic;
+        .navbar-brand:hover img {
+            transform: scale(1.1);
+        }
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            color: var(--light-color) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .masthead {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            min-height: 25rem;
+            padding: 10rem 0;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .masthead::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .masthead h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
+            color: var(--light-color);
+        }
+
+        .masthead p {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 3rem;
+            font-weight: 700;
+            color: var(--light-color);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 40%;
+            height: 3px;
+            bottom: -10px;
+            left: 30%;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .content-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .content-card p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .content-card ul {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            padding-left: 1.5rem;
+        }
+
+        .content-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #00a884;
+            border-color: #00a884;
+            transform: translateY(-2px);
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--dark-color);
+            color: var(--light-color);
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-links a:hover {
+            background: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .masthead h1 {
+                font-size: 2.5rem;
+            }
+            
+            .masthead p {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .content-card {
+                padding: 1.5rem;
+            }
         }
     </style>
+
+    <!-- Favicon Icon -->
+    <link rel="icon" href="assets/images/white-cross.png" type="image/png">
 </head>
 
 <body>
-
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
-                <img src="images/white-cross.png" alt="White Cross" style="height: 30px;"></a>
+                <img src="assets/images/white-cross.png" alt="White Cross">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -55,9 +240,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#terraform">Terraform</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20">GitHub</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/">LinkedIn</a></li>
+                    <li class="nav-item"><a class="nav-link" href="terraform.html">Terraform</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20"><i class="fab fa-github"></i> GitHub</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                 </ul>
             </div>
         </div>
@@ -67,68 +252,80 @@
     <header class="masthead">
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
-                <h1 class="text-white">Terraform - Writeup 1</h1>
-                <p class="text-white-50">Preparing for Terraform Automation</p>
+                <h1>Terraform Writeup 1</h1>
+                <p>Preparing for Terraform Automation</p>
             </div>
         </div>
     </header>
 
-    <!-- Terraform Writeup Section -->
-    <section id="terraform-writeup" class="bg-dark text-white">
-        <div class="container text-center">
-            <h3>Writeup 1: Preparing for Terraform Automation</h3>
-            <p>In this writeup, I will be detailing the preparatory steps I took to get my homelab ready for automation using Terraform. These steps ensure a clean environment that can be managed effectively through code. I like to start simple and add on as I go, so for this first step I'm focusing on my controller to make future deployments easier in case I run into compatibility issues again.</p>
-        </div>
-
+    <!-- Content Section -->
+    <section id="content" class="bg-dark text-white py-5">
         <div class="container">
-            <h4>Steps Taken</h4>
-            <ul>
-                <li>Reviewed and cleaned up my Unifi Controller VM to ensure it is minimal and usable for the future.
-                    <ul>
-                        <li>Disabled unused services to reduce overhead and improve security.</li>
-                        <li>Confirmed and optimized network configurations to ensure correct VLAN tagging and firewall rules.</li>
-                        <li>Cleared out unnecessary files and logs to minimize disk usage.</li>
-                        <li>Checked for updates and applied patches to ensure a stable environment.</li>
-                    </ul>
-                </li>
-                <li>Created a Proxmox template from the clean VM to use as a golden image for future deployments.
-                    <ul>
-                        <li>Set up template configuration in Proxmox to automate deployment.</li>
-                        <li>Tested the template by deploying a VM to ensure correct configuration.</li>
-                    </ul>
-                </li>
-                <li>Set up and initialized Terraform on Proxmox.
-                    <ul>
-                        <li>Installed Terraform on the Proxmox host and configured the provider for Proxmox.</li>
-                        <li>Validated the installation by running a simple test to ensure connectivity to the Proxmox API.</li>
-                    </ul>
-                </li>
-            </ul>
+            <h2 class="section-title text-center">Writeup 1</h2>
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="content-card">
+                        <h3><i class="fas fa-code me-2"></i>Overview</h3>
+                        <p>This writeup details the initial steps and preparations for implementing Terraform automation in my homelab environment.</p>
+                        
+                        <h3><i class="fas fa-list-check me-2"></i>Primary Uses for Terraform Automation</h3>
+                        <ul>
+                            <li>Provisioning VMs on Proxmox</li>
+                            <li>Managing networking resources like VLANs and firewall rules</li>
+                            <li>Automating updates and scaling of resources</li>
+                        </ul>
 
+                        <h3 class="mt-4"><i class="fas fa-tasks me-2"></i>Steps Taken</h3>
+                        <ul>
+                            <li>Reviewed and cleaned up my Unifi Controller VM to ensure it is minimal and usable for the future.
+                                <ul>
+                                    <li>Disabled unused services to reduce overhead and improve security.</li>
+                                    <li>Confirmed and optimized network configurations to ensure correct VLAN tagging and firewall rules.</li>
+                                    <li>Cleared out unnecessary files and logs to minimize disk usage.</li>
+                                    <li>Checked for updates and applied patches to ensure a stable environment.</li>
+                                </ul>
+                            </li>
+                            <li>Created a Proxmox template from the clean VM to use as a golden image for future deployments.
+                                <ul>
+                                    <li>Set up template configuration in Proxmox to automate deployment.</li>
+                                    <li>Tested the template by deploying a VM to ensure correct configuration.</li>
+                                </ul>
+                            </li>
+                            <li>Set up and initialized Terraform on Proxmox.
+                                <ul>
+                                    <li>Installed Terraform on the Proxmox host and configured the provider for Proxmox.</li>
+                                    <li>Validated the installation by running a simple test to ensure connectivity to the Proxmox API.</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <h3><i class="fas fa-rocket me-2"></i>Future Plans</h3>
+                        <p>I plan to expand the Terraform automation to include additional network components, automated backups, and golden images for the VMs I use and deploy in my environment. The goal is to make my homelab management as automated and efficient as possible.</p>
+
+                        <div class="text-center mt-4">
+                            <a href="terraform.html" class="btn btn-primary">Back to Terraform</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="container conclusion">
-            <p>Thanks for reading! I know it's a slow start, but I've already learned a lot, and I’ll continue posting progress write-ups as I keep working on this. Stay tuned for the next steps!</p>
-        </div>
-    </section>
-
-    <!-- View Repo Section -->
-    <section id="repo-link" class="text-center py-4">
-        <a href="https://github.com/arhodges20/terraform" class="btn btn-primary">View Repo</a>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <p>Check out my <a href="https://github.com/arhodges20" class="text-white">GitHub</a> & <a href="https://www.linkedin.com/in/aydan-hodges/" class="text-white">LinkedIn</a></p>
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <div class="social-links mb-3">
+                <a href="https://github.com/arhodges20" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/aydan-hodges/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p class="mb-0">© 2024 Aydan Hodges. All rights reserved.</p>
+        </div>
     </footer>
 
     <!-- Bootstrap & jQuery Scripts -->
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Bootstrap JS (Bundle version includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 
 </html>

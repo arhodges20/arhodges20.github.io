@@ -7,32 +7,37 @@
     <title>Aydan Hodges - Portfolio & Documentation</title>
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="grayscale-theme/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Grayscale Theme Styles -->
-    <link rel="stylesheet" href="grayscale-theme/dist/css/styles.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/main.css">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-KXF8Y0DEH6');
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-KXF8Y0DEH6');
     </script>
 
     <!-- Favicon Icon -->
-    <link rel="icon" href="images/white-cross.png" type="image/png">
-
+    <link rel="icon" href="assets/images/white-cross.png" type="image/png">
 </head>
 
 <body>
-
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container">
             <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
-                <img src="images/white-cross.png" alt="White Cross" style="height: 30px;"></a>
+                <img src="assets/images/white-cross.png" alt="White Cross">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -41,8 +46,8 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
                     <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20">GitHub</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/">LinkedIn</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20"><i class="fab fa-github"></i> GitHub</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
                 </ul>
             </div>
         </div>
@@ -52,45 +57,120 @@
     <header class="masthead">
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
-                <h1 class="text-white">Aydan Hodges</h1>
-                <p class="text-white-50">Portfolio & Documentation</p>
+                <h1>Aydan Hodges</h1>
+                <p>IT/Cyber Portfolio & Documentation</p>
+                <div class="divider"></div>
+                <p class="lead mb-2" style="font-size:1.1rem; color:rgba(255,255,255,0.85); font-weight:500;">SOC Analyst - CySA+ & Sec+</p>
+                <div class="badges-row mb-3">
+                    <a href="https://www.sans.org/blog/how-to-become-a-soc-analyst/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;" class="badge-link">
+                        <span class="badge bg-primary">SOC Analyst</span>
+                    </a>
+                    <a href="https://www.credly.com/badges/492bc57b-e7d7-46e4-9d20-b457d13b5054/public_url" target="_blank" rel="noopener noreferrer" style="text-decoration: none;" class="badge-link">
+                        <span class="badge bg-info">CySA+</span>
+                    </a>
+                    <a href="https://www.credly.com/badges/b45ebfa8-6da8-4e4e-89c0-de2a52f91e61/public_url" target="_blank" rel="noopener noreferrer" style="text-decoration: none;" class="badge-link">
+                        <span class="badge" style="background-color: #e03a3e; color: #fff;">Sec+</span>
+                    </a>
+                </div>
+                <a href="https://github.com/arhodges20" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github me-2"></i>View My Work
+                </a>
             </div>
         </div>
     </header>
 
-    <!-- About Section -->
-    <section id="about" class="bg-light">
-        <div class="container text-center">
-            <h2>About Me</h2>
-            <p>IT/Cyber student graduating April 2025 - SOC Analyst - CySA+ & Sec+</p>
+    <!-- Projects Section -->
+    <section id="projects" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title text-center">Projects</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="card-body">
+                            <h3 class="card-title">Homelab</h3>
+                            <p class="card-text">My home lab setup and infrastructure documentation.</p>
+                            <a href="homelab.html" class="btn btn-primary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="card-body">
+                            <h3 class="card-title">Terraform</h3>
+                            <p class="card-text">Documentation on my use of terraform within my homelab.</p>
+                            <a href="terraform.html" class="btn btn-primary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="card-body">
+                            <h3 class="card-title">Setup Scripts</h3>
+                            <p class="card-text">Learning Git and automation scripting.</p>
+                            <a href="https://github.com/arhodges20/setup-scripts" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="card-body">
+                            <h3 class="card-title">ITT-221 Scripts</h3>
+                            <p class="card-text">Scripts to automate assignments completed in ITT-221.</p>
+                            <a href="https://github.com/arhodges20/ITT-221" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="project-card">
+                        <div class="card-body">
+                            <h3 class="card-title">Panoptic</h3>
+                            <p class="card-text mb-2">A real-time system monitoring solution.</p>
+                            <a href="https://github.com/arhodges20/Panoptic" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects">
-        <div class="container text-center">
-            <h2>Projects</h2>
-            <ul class="list-unstyled">
-                <li><a href="homelab.html">Homelab</a> - My home lab setup</li>
-                <li><a href="terraform.html">Terraform</a> - Documentation on my use of terraform within my homelab</li>
-                <li><a href="https://github.com/arhodges20/setup-scripts">Setup Scripts</a> - Learning Git and automation scripting</li>
-                <li><a href="https://github.com/arhodges20/ITT-221">ITT-221 Scripts</a> - Scripts to automate assignments completed in ITT-221</li>
-            </ul>
+    <!-- Cheat Sheets Section -->
+    <section id="cheat-sheets" class="py-5">
+        <div class="container">
+            <h2 class="section-title text-center">Cheat Sheets</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body text-center">
+                            <h4 class="mb-3">Coming Soon</h4>
+                            <p class="mb-2">This section will include my most-used queries and scripts for:</p>
+                            <ul class="list-inline mb-0">
+                                <li class="list-inline-item"><span class="badge bg-success">SPL (Splunk)</span></li>
+                                <li class="list-inline-item"><span class="badge bg-primary">PowerShell</span></li>
+                                <li class="list-inline-item"><span class="badge bg-dark">CrowdStrike</span></li>
+                            </ul>
+                            <p class="mt-3 text-muted" style="font-size:0.95rem;">Check back soon for practical examples and quick reference guides!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3">
-        <p>Check out my <a href="https://github.com/arhodges20" class="text-white">GitHub</a> & <a href="https://www.linkedin.com/in/aydan-hodges/" class="text-white">LinkedIn</a></p>
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <div class="social-links mb-3">
+                <a href="https://github.com/arhodges20" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/aydan-hodges/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p class="mb-0">© 2024 Aydan Hodges. All rights reserved.</p>
+        </div>
     </footer>
 
     <!-- Bootstrap & jQuery Scripts -->
-    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Bootstrap JS (Bundle version includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
 </body>
 
 </html>
