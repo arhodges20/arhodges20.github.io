@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Splunk Search Cheat Sheet - Aydan Hodges</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <!-- Favicon Icon -->
+    <link rel="icon" href="assets/images/white-cross.png" type="image/png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
+                <img src="assets/images/white-cross.png" alt="White Cross">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="homelab.html">Homelab</a></li>
+                    <li class="nav-item"><a class="nav-link" href="terraform.html">Terraform</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20"><i class="fab fa-github"></i> GitHub</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="masthead d-flex align-items-center justify-content-center" style="min-height: 40vh;">
+        <div class="container d-flex flex-column align-items-center justify-content-center h-100">
+            <div class="text-center w-100">
+                <h1>Splunk Search Cheat Sheet</h1>
+                <p class="lead mb-0" style="color:rgba(255,255,255,0.85); font-weight:500;">Beginner Reference for SPL (Search Processing Language)</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 col-xl-8">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center">
+                                <h2 class="section-title mb-4">Splunk Search Cheat Sheet</h2>
+                            </div>
+
+                            <h4>1. Search Basics</h4>
+                            <pre class="bg-light p-2 rounded"><code>index=* keyword</code></pre>
+                            <ul>
+                                <li><code>index=*</code>: Search across all indexes.</li>
+                                <li><code>keyword</code>: Match any event containing the keyword.</li>
+                            </ul>
+
+                            <h4>2. Setting Time Ranges</h4>
+                            <ul>
+                                <li><strong>Using GUI:</strong> Top-right of search screen – select <strong>Last 15 minutes</strong>, <strong>Today</strong>, etc.</li>
+                                <li><strong>Using Search Command:</strong></li>
+                            </ul>
+                            <pre class="bg-light p-2 rounded"><code>earliest=-15m latest=now</code></pre>
+
+                            <h4>3. Search Modes (GUI)</h4>
+                            <ul>
+                                <li><strong>Fast Mode</strong>: Prioritizes speed, limits field discovery.</li>
+                                <li><strong>Smart Mode</strong>: Balanced – shows relevant fields automatically.</li>
+                                <li><strong>Verbose Mode</strong>: Returns all possible fields (slowest).</li>
+                            </ul>
+                            <p><em>Change mode from the dropdown above the search bar.</em></p>
+
+                            <h4>4. Formatting Data</h4>
+                            <h6 class="mt-3">Using <code>table</code></h6>
+                            <p>Display data in a clean table format.</p>
+                            <pre class="bg-light p-2 rounded"><code>index=web_logs | table host, status, uri_path</code></pre>
+
+                            <h6>Using <code>stats</code></h6>
+                            <p>Count, group, or aggregate data.</p>
+                            <pre class="bg-light p-2 rounded"><code>index=web_logs | stats count by status</code></pre>
+                            <ul>
+                                <li><code>stats count</code>: Counts total events.</li>
+                                <li><code>by status</code>: Group counts by HTTP status code (example).</li>
+                            </ul>
+
+                            <h4>5. Basic Search Commands</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Command</th>
+                                            <th>Purpose</th>
+                                            <th>Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>index=</code></td>
+                                            <td>Specify index to search</td>
+                                            <td><code>index=web_logs</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>source=</code></td>
+                                            <td>Filter by log source</td>
+                                            <td><code>source="/var/log/syslog"</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>sourcetype=</code></td>
+                                            <td>Filter by log type</td>
+                                            <td><code>sourcetype=access_combined</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>host=</code></td>
+                                            <td>Filter by host</td>
+                                            <td><code>host=server01</code></td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>fields</code></td>
+                                            <td>Show specific fields</td>
+                                            <td><code>| fields host, status</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4>6. Pipes (|)</h4>
+                            <p>Use pipes to chain commands and refine data.</p>
+                            <pre class="bg-light p-2 rounded"><code>index=web_logs | stats count by host</code></pre>
+
+                            <h4>7. Filtering Events</h4>
+                            <p>Example: Find only 200 or 404 status codes.</p>
+                            <pre class="bg-light p-2 rounded"><code>status=200 OR status=404</code></pre>
+
+                            <h4>8. Extracting Fields (Optional)</h4>
+                            <p>Create custom fields using regex (advanced):</p>
+                            <pre class="bg-light p-2 rounded"><code>index=web_logs | rex "User:\s(?&lt;username&gt;\w+)"</code></pre>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <div class="social-links mb-3">
+                <a href="https://github.com/arhodges20" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/aydan-hodges/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p class="mb-0">© 2025 Aydan Hodges.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
