@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cyber Threat Intelligence - Aydan Hodges</title>
+    <meta name="description" content="Threat actor profiles and cyber threat intelligence reports by Aydan Hodges">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-KXF8Y0DEH6');
+    </script>
+
+    <!-- Favicon Icon -->
+    <link rel="icon" href="../assets/images/white-cross.png" type="image/png">
+
+    <style>
+        .cti-header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 4rem 0 3rem 0;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cti-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 1;
+        }
+        
+        .cti-header .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .cti-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .cti-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .back-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .back-link:hover {
+            color: #00a884;
+            text-decoration: underline;
+        }
+        
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+        
+        .threat-actor-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        
+        .threat-actor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .threat-actor-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .threat-actor-title {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .threat-actor-subtitle {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .threat-actor-description {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .threat-actor-tags {
+            margin-bottom: 1.5rem;
+        }
+        
+        .threat-tag {
+            display: inline-block;
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin-right: 0.4rem;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        
+        .coming-soon-card {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 12px;
+            padding: 2rem;
+            height: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .coming-soon-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--secondary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
+                <img src="../assets/images/white-cross.png" alt="White Cross">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20"><i class="fab fa-github"></i> GitHub</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="cti-header">
+        <div class="container">
+            <a href="../index.html" class="back-link" style="color: white;">
+                <i class="fas fa-arrow-left"></i> Back to Portfolio
+            </a>
+            <div class="text-center">
+                <h1><i class="fas fa-shield-alt me-3"></i>Cyber Threat Intelligence</h1>
+                <p>Threat actor profiles and intelligence reports</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Threat Actors Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Qilin Threat Actor -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="threat-actor-card">
+                        <div class="threat-actor-icon">
+                            <i class="fas fa-dragon"></i>
+                        </div>
+                        <h3 class="threat-actor-title">Qilin (Agenda)</h3>
+                        <p class="threat-actor-subtitle">Ransomware-as-a-Service • Active since 2022</p>
+                        <p class="threat-actor-description">
+                            A sophisticated ransomware-as-a-service operation known for double extortion tactics, 
+                            targeting critical infrastructure sectors including healthcare and manufacturing.
+                        </p>
+                        <div class="threat-actor-tags">
+                            <span class="threat-tag">RaaS</span>
+                            <span class="threat-tag">Double Extortion</span>
+                            <span class="threat-tag">Critical Infrastructure</span>
+                        </div>
+                        <a href="qilin.html" class="btn btn-primary w-100">View Profile</a>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Cards -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="coming-soon-card">
+                        <div class="coming-soon-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <h4 class="mb-3">More Threat Actors</h4>
+                        <p class="text-muted mb-3">Additional threat actor profiles will be added here as they are researched and documented.</p>
+                        <span class="badge bg-secondary">Coming Soon</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="coming-soon-card">
+                        <div class="coming-soon-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h4 class="mb-3">Threat Trends</h4>
+                        <p class="text-muted mb-3">Analysis of emerging threat trends and attack patterns will be featured here.</p>
+                        <span class="badge bg-secondary">Coming Soon</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <div class="social-links mb-3">
+                <a href="https://github.com/arhodges20" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/aydan-hodges/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p class="mb-0">© 2025 Aydan Hodges.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/main.js"></script>
+</body>
+
+</html>

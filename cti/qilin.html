@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Threat Actor Profile: Qilin (aka Agenda) - Aydan Hodges</title>
+    <meta name="description" content="Concise threat actor profile for Qilin (Agenda) with MITRE ATT&CK mapping, defensive recommendations, and references.">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/main.css">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-KXF8Y0DEH6');
+    </script>
+
+    <!-- Favicon Icon -->
+    <link rel="icon" href="../assets/images/white-cross.png" type="image/png">
+
+    <style>
+        .threat-actor-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .threat-actor-header {
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .threat-actor-header h1 {
+            color: var(--dark-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .threat-actor-meta {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .toc {
+            background: var(--light-color);
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .toc strong {
+            color: var(--dark-color);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .toc a {
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-right: 1rem;
+            font-weight: 500;
+        }
+        
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        
+        .section h2 {
+            color: var(--dark-color);
+            font-weight: 600;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section h3 {
+            color: var(--dark-color);
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: rgba(0, 184, 148, 0.1);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .ref-list {
+            list-style: decimal;
+            margin-left: 1.5rem;
+        }
+        
+        .ref-list li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .back-link:hover {
+            color: #00a884;
+            text-decoration: underline;
+        }
+        
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
+                <img src="../assets/images/white-cross.png" alt="White Cross">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20"><i class="fab fa-github"></i> GitHub</a></li>
+                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content Section -->
+    <section class="py-5" style="margin-top: 80px;">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to CTI
+            </a>
+            
+            <div class="threat-actor-content">
+                <div class="threat-actor-header">
+                    <h1>Threat Actor Profile: Qilin <span style="font-size: 1.2rem; color: var(--secondary-color);">(aka Agenda)</span></h1>
+                    <div class="threat-actor-meta">
+                        <i class="fas fa-shield-alt me-2"></i>Ransomware-as-a-Service • Active since at least 2022 • Double extortion
+                    </div>
+                </div>
+
+                <div class="toc">
+                    <strong>Contents:</strong>
+                    <a href="#overview">Overview</a>
+                    <a href="#attribution">Attribution & Origin</a>
+                    <a href="#characteristics">Notable Characteristics</a>
+                    <a href="#ttps">Tactics, Techniques & Procedures</a>
+                    <a href="#evasion">Evasion & Anti-Forensics</a>
+                    <a href="#defense">Defensive Recommendations</a>
+                    <a href="#references">References</a>
+                </div>
+
+                <div class="section" id="overview">
+                    <h2>Overview</h2>
+                    <p>Qilin, also known as <em>Agenda</em>, is a highly sophisticated ransomware-as-a-service (RaaS) operation active since at least 2022. The group distinguishes itself through extensive customization options for affiliates and a focus on double extortion. Qilin encrypts victim data and also exfiltrates files; if ransom is not paid, stolen data is leaked publicly.</p>
+                </div>
+
+                <div class="section" id="attribution">
+                    <h2>Attribution & Origin</h2>
+                    <ul>
+                        <li><strong>Aliases:</strong> Agenda</li>
+                        <li><strong>First Observed:</strong> 2022</li>
+                        <li><strong>Model:</strong> Ransomware-as-a-Service (RaaS)</li>
+                        <li><strong>Primary Target Countries:</strong> United States, United Kingdom, Germany, France, Canada, Japan</li>
+                        <li><strong>Primary Target Sectors:</strong> Critical infrastructure including healthcare, manufacturing, and education</li>
+                    </ul>
+                </div>
+
+                <div class="section" id="characteristics">
+                    <h2>Notable Characteristics</h2>
+                    <ul>
+                        <li><span class="tag">Double extortion</span> Encrypts and exfiltrates data; leaks if unpaid.</li>
+                        <li><span class="tag">Customization</span> Affiliates configure persistence, encryption, and execution behavior.</li>
+                        <li><span class="tag">Sophistication</span> Uses layered persistence, privilege escalation, and evasion.</li>
+                        <li><span class="tag">Initial Access</span> Frequently via credentials purchased/leaked on underground markets.</li>
+                    </ul>
+                </div>
+
+                <div class="section" id="ttps">
+                    <h2>Tactics, Techniques & Procedures (MITRE ATT&CK)</h2>
+
+                    <h3>Initial Access</h3>
+                    <ul>
+                        <li><strong>Valid Accounts (T1078):</strong> Access via leaked or purchased credentials.</li>
+                        <li><strong>Spearphishing Link (T1566.002):</strong> Malicious links/attachments in email.</li>
+                    </ul>
+
+                    <h3>Execution</h3>
+                    <ul>
+                        <li><strong>Command and Scripting Interpreter (T1059):</strong> Use of CLI and scripts to execute actions.</li>
+                    </ul>
+
+                    <h3>Persistence</h3>
+                    <ul>
+                        <li><strong>Scheduled Task (T1053.005):</strong> Maintains persistence through scheduled tasks.</li>
+                        <li><strong>Registry Run Keys / Startup Folder (T1547.001):</strong> Registry entries or startup executables.</li>
+                        <li><strong>Valid Accounts (T1078):</strong> Continued access using compromised accounts.</li>
+                    </ul>
+
+                    <h3>Privilege Escalation</h3>
+                    <ul>
+                        <li><strong>Process Injection (T1055):</strong> Code injection into legitimate processes.</li>
+                        <li><strong>Group Policy Modification (T1484.001):</strong> Weakens security settings via GPO changes.</li>
+                        <li><strong>Group Policy Preferences (T1552.006):</strong> Abuse of stored credentials.</li>
+                    </ul>
+
+                    <h3>Defense Evasion</h3>
+                    <ul>
+                        <li><strong>Disable Windows Event Logging (T1562.002):</strong> Hinders detection and analysis.</li>
+                        <li><strong>Safe Mode Boot (T1562.009):</strong> Reboots into Safe Mode before encryption.</li>
+                        <li><strong>Modify Registry (T1112):</strong> Adjusts registry settings to avoid detection.</li>
+                    </ul>
+
+                    <h3>Credential Access</h3>
+                    <ul>
+                        <li><strong>Credentials in Files (T1552.001):</strong> Searches for and extracts credentials from files.</li>
+                    </ul>
+
+                    <h3>Lateral Movement</h3>
+                    <ul>
+                        <li><strong>Replication Through Removable Media (T1091):</strong> Spreads via removable devices.</li>
+                    </ul>
+                </div>
+
+                <div class="section" id="evasion">
+                    <h2>Evasion & Anti-Forensics</h2>
+                    <ul>
+                        <li>Disables security systems prior to encryption.</li>
+                        <li>Disables Windows Event Logs to obscure activity.</li>
+                        <li>Boots into Safe Mode to neutralize protections before encrypting data.</li>
+                    </ul>
+                </div>
+
+                <div class="section" id="defense">
+                    <h2>Defensive Recommendations</h2>
+                    <ul>
+                        <li><strong>Multi-Factor Authentication (MFA):</strong> Enforce for all remote/privileged accounts.</li>
+                        <li><strong>Network Segmentation:</strong> Isolate critical systems and reduce blast radius.</li>
+                        <li><strong>Patch Management:</strong> Prioritize external-facing services.</li>
+                        <li><strong>Endpoint Detection & Response (EDR):</strong> Monitor for persistence & credential theft behavior.</li>
+                        <li><strong>User Awareness Training:</strong> Phishing/credential-theft education.</li>
+                        <li><strong>Backups:</strong> Maintain offline, tested backups.</li>
+                    </ul>
+                </div>
+
+                <div class="section" id="references">
+                    <h2>References</h2>
+                    <ol class="ref-list">
+                        <li>MITRE ATT&CK. <em>Qilin Ransomware – Techniques and Procedures.</em> <a href="https://attack.mitre.org/" target="_blank" rel="noopener">https://attack.mitre.org/</a></li>
+                        <li>Cyble. <em>Qilin Ransomware Group – Threat Actor Profile.</em> <a href="https://cyble.com/threat-actor-profiles/qilin-ransomware-group/" target="_blank" rel="noopener">https://cyble.com/threat-actor-profiles/qilin-ransomware-group/</a></li>
+                        <li>U.S. Department of Health & Human Services. <em>Qilin Threat Profile (TLP:CLEAR).</em> <a href="https://www.hhs.gov/sites/default/files/qilin-threat-profile-tlpclear.pdf" target="_blank" rel="noopener">https://www.hhs.gov/sites/default/files/qilin-threat-profile-tlpclear.pdf</a></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <div class="social-links mb-3">
+                <a href="https://github.com/arhodges20" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/aydan-hodges/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <p class="mb-0">© 2025 Aydan Hodges.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & jQuery Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/main.js"></script>
+</body>
+
+</html>
