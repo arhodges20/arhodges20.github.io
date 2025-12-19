@@ -149,11 +149,12 @@ body {
 .project-card {
     border: none;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible;
     transition: all 0.3s ease;
     background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     height: 100%;
+    position: relative;
 }
 
 .project-card:hover {
@@ -250,6 +251,38 @@ body {
 .social-links a:hover {
     background: var(--accent-color);
     transform: translateY(-3px);
+}
+
+.new-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: linear-gradient(135deg, #00B894, #00d4a3);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 10;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 6px 20px rgba(0, 184, 148, 0.6);
+        transform: scale(1.05);
+    }
+}
+
+.project-card {
+    position: relative;
 }
 
 @media (max-width: 768px) {

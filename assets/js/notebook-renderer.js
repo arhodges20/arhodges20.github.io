@@ -22,10 +22,17 @@
         // First, handle README if it exists
         if (data.README && data.README.content) {
             const itemKey = parentKey ? `${parentKey}/README` : 'README';
+            // Use parent directory name for README, or "Overview" for root
+            let readmeName = 'Overview';
+            if (parentKey) {
+                const parentParts = parentKey.split('/');
+                const parentName = parentParts[parentParts.length - 1];
+                readmeName = formatDisplayName(parentName);
+            }
             navItems.push({
                 type: 'file',
                 key: itemKey,
-                name: 'Overview',
+                name: readmeName,
                 path: data.README.path,
                 content: data.README.content,
                 level: level
@@ -371,14 +378,32 @@
         
         // Add methodology
         if (notebookData.methodology) {
-            const methodologyItems = buildNavTree(notebookData.methodology, 'methodology', 0);
-            navTree.push(...methodologyItems);
+            const methodologyData = notebookData.methodology;
+            const methodologyChildren = buildNavTree(methodologyData, 'methodology', 0);
+            const methodologyReadme = methodologyData.README && methodologyData.README.content ? methodologyData.README.content : null;
+            
+            navTree.push({
+                type: 'directory',
+                key: 'methodology',
+                name: 'Methodology',
+                children: methodologyChildren,
+                readme: methodologyReadme
+            });
         }
         
         // Add detection-templates
         if (notebookData['detection-templates']) {
-            const templateItems = buildNavTree(notebookData['detection-templates'], 'detection-templates', 0);
-            navTree.push(...templateItems);
+            const templateData = notebookData['detection-templates'];
+            const templateChildren = buildNavTree(templateData, 'detection-templates', 0);
+            const templateReadme = templateData.README && templateData.README.content ? templateData.README.content : null;
+            
+            navTree.push({
+                type: 'directory',
+                key: 'detection-templates',
+                name: 'Detection Templates',
+                children: templateChildren,
+                readme: templateReadme
+            });
         }
         
         // Add attacker-objectives
