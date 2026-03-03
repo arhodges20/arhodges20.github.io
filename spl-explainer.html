@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPLain — Explain your Splunk searches</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0c10;--surface:#111318;--border:#1e2230;--border-light:#2a2f42;
+  --text:#e2e8f0;--text-muted:#64748b;--text-dim:#94a3b8;
+  --accent:#38bdf8;--accent-glow:rgba(56,189,248,0.15);
+  --green:#4ade80;--yellow:#fbbf24;--orange:#fb923c;
+  --purple:#a78bfa;--pink:#f472b6;--red:#f87171;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(56,189,248,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.container{max-width:920px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+header{padding:48px 0 32px;text-align:center;}
+.logo{font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;opacity:0;animation:fadeUp 0.6s ease forwards;}
+h1{font-family:var(--sans);font-size:clamp(2rem,5vw,3.4rem);font-weight:800;letter-spacing:-0.02em;line-height:1.1;background:linear-gradient(135deg,#e2e8f0 0%,#94a3b8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:fadeUp 0.6s 0.1s ease forwards;}
+.subtitle{margin-top:12px;color:var(--text-muted);font-size:13px;letter-spacing:0.02em;opacity:0;animation:fadeUp 0.6s 0.2s ease forwards;}
+.search-box{margin-top:40px;opacity:0;animation:fadeUp 0.6s 0.3s ease forwards;}
+.input-wrapper{background:var(--surface);border:1px solid var(--border-light);border-radius:12px;padding:16px 20px;transition:border-color 0.2s,box-shadow 0.2s;}
+.input-wrapper:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow),0 0 30px rgba(56,189,248,0.06);}
+.input-label{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:block;}
+textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.8;resize:none;min-height:70px;caret-color:var(--accent);}
+textarea::placeholder{color:var(--text-muted);}
+.input-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);gap:12px;flex-wrap:wrap;}
+.examples{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.example-btn{background:transparent;border:1px solid var(--border-light);color:var(--text-muted);font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all 0.15s;}
+.example-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow);}
+.explain-btn{background:var(--accent);color:#0a0c10;border:none;font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:0.05em;padding:10px 24px;border-radius:8px;cursor:pointer;transition:all 0.15s;white-space:nowrap;}
+.explain-btn:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(56,189,248,0.3);}
+.explain-btn:active{transform:translateY(0);}
+.results{margin-top:36px;display:none;}
+.results.visible{display:block;}
+
+/* Stage blocks */
+.stage{margin-bottom:28px;animation:fadeUp 0.35s ease forwards;opacity:0;}
+.stage-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.stage-num{font-size:10px;font-weight:700;letter-spacing:0.12em;color:var(--text-muted);background:var(--border);padding:2px 8px;border-radius:4px;}
+.stage-cmd{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--accent);letter-spacing:0.05em;text-transform:uppercase;}
+.stage-desc{font-size:11px;color:var(--text-muted);flex:1;}
+
+/* Rendered tokenized line */
+.token-line{background:var(--surface);border:1px solid var(--border-light);border-radius:10px;padding:14px 18px;font-size:13px;line-height:2.2;margin-bottom:14px;overflow-x:auto;word-break:break-all;}
+.tok{display:inline;padding:2px 5px;border-radius:4px;cursor:pointer;transition:filter 0.12s;white-space:pre;}
+.tok:hover{filter:brightness(1.35);}
+.tok.active{outline:2px solid rgba(255,255,255,0.8);outline-offset:1px;}
+
+/* Token types */
+.t-command{color:#38bdf8;background:rgba(56,189,248,0.12);}
+.t-pipe{color:#475569;}
+.t-field{color:#4ade80;background:rgba(74,222,128,0.08);}
+.t-value{color:#fbbf24;background:rgba(251,191,36,0.08);}
+.t-function{color:#fb923c;background:rgba(251,146,60,0.1);}
+.t-operator{color:#a78bfa;}
+.t-keyword{color:#f472b6;background:rgba(244,114,182,0.08);}
+.t-time{color:#f87171;background:rgba(248,113,113,0.08);}
+.t-string{color:#fde68a;}
+.t-number{color:#fdba74;}
+.t-wildcard{color:#c4b5fd;}
+.t-sourcetype{color:#67e8f9;background:rgba(103,232,249,0.08);}
+.t-index{color:#f0abfc;background:rgba(240,171,252,0.08);}
+.t-subsearch{color:#94a3b8;}
+.t-paren{color:#64748b;}
+.t-comma{color:#475569;}
+.t-equals{color:#a78bfa;}
+.t-unknown{color:#94a3b8;}
+
+/* Explanation cards */
+.cards{display:flex;flex-direction:column;gap:8px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:13px 16px;display:flex;gap:14px;cursor:pointer;transition:all 0.15s;}
+.card:hover{border-color:var(--border-light);background:#12151d;}
+.card.hl{border-left:3px solid var(--accent);background:rgba(56,189,248,0.04);}
+.card-n{font-size:10px;color:var(--text-muted);min-width:22px;padding-top:1px;}
+.card-body{flex:1;}
+.card-tok{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;}
+.card-tok code{font-family:var(--mono);font-size:12px;font-weight:600;}
+.badge{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--border);color:var(--text-muted);}
+.card-desc{font-size:12px;color:var(--text-dim);line-height:1.65;}
+.card-note{font-size:11px;color:var(--text-muted);margin-top:4px;border-left:2px solid var(--border-light);padding-left:8px;line-height:1.5;}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:12px 18px;background:var(--surface);border:1px solid var(--border);border-radius:9px;margin-bottom:24px;}
+.lg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted);}
+.ld{width:8px;height:8px;border-radius:2px;}
+
+/* Dividers between stages */
+.pipe-divider{display:flex;align-items:center;gap:12px;margin:4px 0 24px;color:var(--text-muted);font-size:11px;letter-spacing:0.08em;}
+.pipe-divider::before,.pipe-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+footer{text-align:center;padding:40px 0 28px;color:var(--text-muted);font-size:11px;letter-spacing:0.05em;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.stage:nth-child(1){animation-delay:0s;}
+.stage:nth-child(2){animation-delay:0.07s;}
+.stage:nth-child(3){animation-delay:0.14s;}
+.stage:nth-child(4){animation-delay:0.21s;}
+.stage:nth-child(5){animation-delay:0.28s;}
+.stage:nth-child(6){animation-delay:0.35s;}
+.card:nth-child(1){animation-delay:0.02s;}
+.card:nth-child(2){animation-delay:0.05s;}
+.card:nth-child(3){animation-delay:0.08s;}
+
+
+/* ── NEW: Search type banner ── */
+.search-banner{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-radius:10px;margin-bottom:20px;border:1px solid;font-size:12px;line-height:1.6;}
+.search-banner.correlation{background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.25);color:#fca5a5;}
+.search-banner.risk{background:rgba(251,146,60,0.06);border-color:rgba(251,146,60,0.25);color:#fdba74;}
+.search-banner.tstats{background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.2);color:#7dd3fc;}
+.search-banner.report{background:rgba(74,222,128,0.06);border-color:rgba(74,222,128,0.2);color:#86efac;}
+.search-banner.lookup-gen{background:rgba(167,139,250,0.06);border-color:rgba(167,139,250,0.25);color:#c4b5fd;}
+.search-banner.notable{background:rgba(244,114,182,0.06);border-color:rgba(244,114,182,0.25);color:#f9a8d4;}
+.banner-icon{font-size:18px;flex-shrink:0;line-height:1;}
+.banner-body strong{display:block;font-size:12px;font-weight:700;margin-bottom:3px;letter-spacing:0.04em;}
+
+/* ── NEW: Performance warning pills ── */
+.perf-block{margin-bottom:20px;}
+.perf-header{font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.perf-pill{display:flex;align-items:flex-start;gap:10px;background:rgba(251,191,36,0.05);border:1px solid rgba(251,191,36,0.2);border-radius:8px;padding:10px 14px;margin-bottom:7px;font-size:12px;line-height:1.55;}
+.perf-pill.warn{background:rgba(251,191,36,0.05);border-color:rgba(251,191,36,0.22);color:#fde68a;}
+.perf-pill.error{background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.25);color:#fca5a5;}
+.perf-pill.info{background:rgba(56,189,248,0.05);border-color:rgba(56,189,248,0.2);color:#7dd3fc;}
+.perf-icon{font-size:14px;flex-shrink:0;padding-top:1px;}
+.perf-body strong{font-weight:600;}
+
+/* ── NEW: MITRE ATT&CK badge ── */
+.mitre-block{margin-bottom:20px;}
+.mitre-header{font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;}
+.mitre-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.mitre-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.25);border-radius:6px;padding:5px 10px;font-size:11px;color:#c4b5fd;cursor:default;}
+.mitre-tag .tid{font-weight:700;letter-spacing:0.05em;}
+.mitre-tag .tname{color:var(--text-dim);}
+
+/* ── NEW: Macro token styles ── */
+.t-macro{color:#e879f9;background:rgba(232,121,249,0.12);}
+.card-expand{margin-top:8px;}
+.expand-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;display:block;}
+.expand-input{width:100%;background:#0a0c10;border:1px solid var(--border-light);border-radius:6px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;}
+.expand-input:focus{border-color:#e879f9;}
+.expand-note{font-size:11px;color:var(--text-muted);margin-top:5px;}
+
+/* ── NEW: ES field highlight ── */
+.t-es-field{color:#34d399;background:rgba(52,211,153,0.1);}
+.t-risk{color:#fb923c;background:rgba(251,146,60,0.1);}
+</style></style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">SPLain</div>
+    <h1>Explain your Splunk<br>searches, instantly.</h1>
+    <p class="subtitle">Paste any SPL query &mdash; get a plain-English breakdown of every token. No internet required.</p>
+  </header>
+
+  <div class="search-box">
+    <div class="input-wrapper">
+      <span class="input-label">SPL Query</span>
+      <textarea id="spl" placeholder="index=main sourcetype=syslog earliest=-24h | stats count by host | sort -count | head 10" rows="3"></textarea>
+      <div class="input-footer">
+        <div class="examples">
+          <span style="font-size:11px;color:var(--text-muted);margin-right:2px;">Try:</span>
+          <button class="example-btn" onclick="ex(1)">stats count</button>
+          <button class="example-btn" onclick="ex(2)">eval + rex</button>
+          <button class="example-btn" onclick="ex(3)">transaction</button>
+          <button class="example-btn" onclick="ex(4)">tstats</button>
+          <button class="example-btn" onclick="ex(0)">notable</button>
+          <button class="example-btn" onclick="ex(5)">risk scoring</button>
+        </div>
+        <button class="explain-btn" onclick="run()">Explain &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results" id="results"></div>
+</div>
+<footer>100% client-side &middot; No API calls &middot; Built for detection engineers</footer>
+
+<script>
+// ─── EXAMPLES ────────────────────────────────────────────────────────────────
+var EXAMPLES = [
+  '`notable` | stats count by rule_name,owner | sort -count',
+  'index=main sourcetype=syslog earliest=-24h | stats count by host | sort -count | head 10',
+  'index=security sourcetype=wineventlog EventCode=4625 | eval hour=strftime(_time,"%H") | rex field=Message "Account Name:\\s+(?<username>\\S+)" | stats count by username,hour | where count > 5',
+  'index=network sourcetype=firewall action=blocked | transaction src_ip maxspan=5m maxpause=30s | where eventcount > 10 | table src_ip,duration,eventcount',
+  '| tstats summariesonly=true count from datamodel=Network_Traffic.All_Traffic where All_Traffic.action=blocked by All_Traffic.src_ip,All_Traffic.dest_port | rename All_Traffic.src_ip as src_ip | sort -count',
+  'index=risk source=risk_rule | stats sum(risk_score) as total_risk count by risk_object risk_object_type | where total_risk > 100 | eval risk_level=case(total_risk>500,"critical",total_risk>200,"high",total_risk>100,"medium",1=1,"low") | sort -total_risk'
+];
+function ex(i){ document.getElementById('spl').value=EXAMPLES[i]; }
+
+// ─── MACRO KNOWLEDGE BASE ────────────────────────────────────────────────────
+var MACRO_INFO = {
+  // Splunk ES built-in macros
+  'notable':            {desc:'Splunk ES built-in macro. Expands to search the notable events index — the primary store for triggered correlation search findings.', tip:'Equivalent to searching index=notable. Used as the base for incident review dashboards.', category:'es'},
+  'get_notable_info':   {desc:'ES macro. Enriches a notable event with additional context from the notable index, such as analyst comments and disposition.', tip:'', category:'es'},
+  'get_risk_modifiers': {desc:'ES macro. Retrieves all risk modifier events associated with a risk object, used to understand what drove a risk score.', tip:'Used in risk-based alerting workflows to investigate contributing factors.', category:'es'},
+  'drop_dm_object_name':{desc:'ES macro. Takes a data model name as argument and strips the "Object." prefix from all field names, making tstats output cleaner.', tip:'e.g. `drop_dm_object_name(Network_Traffic)` turns All_Traffic.src_ip into src_ip.', category:'es'},
+  'summariesonly':      {desc:'ES macro. Argument shorthand that expands to summariesonly=true for tstats queries.', tip:'Forces tstats to use only accelerated summary data.', category:'es'},
+  'cim_Authentication_indexes': {desc:'ES macro. Expands to all indexes that contain CIM-compliant Authentication data model events.', tip:'Defined in the SA-CIM-Validator or data model configuration.', category:'cim'},
+  'cim_Network_Traffic_indexes':{desc:'ES macro. Expands to all indexes containing CIM Network_Traffic data model events.', tip:'', category:'cim'},
+  'cim_Endpoint_indexes':       {desc:'ES macro. Expands to all indexes containing CIM Endpoint (processes, filesystem, registry) events.', tip:'', category:'cim'},
+  'cim_Web_indexes':             {desc:'ES macro. Expands to all indexes containing CIM Web data model events.', tip:'', category:'cim'},
+  'get_asset':          {desc:'ES macro. Performs an asset lookup enrichment — adds asset metadata (owner, priority, category, etc.) for the given IP or hostname.', tip:'Depends on the Asset & Identity framework being configured.', category:'es'},
+  'get_identity':       {desc:'ES macro. Performs an identity lookup — adds user metadata (email, manager, department, etc.) for the given username.', tip:'Depends on the Asset & Identity framework.', category:'es'},
+  'incident_review':    {desc:'ES macro. Returns fields from the incident review audit trail — analyst assignments, status changes, and comments.', tip:'', category:'es'},
+  'risk_correlation_search':{desc:'ES macro pattern used in risk-based alerting. Searches the risk index and correlates events by risk object.', tip:'', category:'risk'},
+  'set_risk':           {desc:'ES macro. Sets a risk score on a risk object (user or system). Used inside correlation searches to populate the risk index.', tip:'Arguments: risk_object, risk_object_type, risk_score, search_name.', category:'risk'},
+  'datamodel':          {desc:'Macro shorthand for referencing a Splunk data model in tstats queries.', tip:'', category:'dm'},
+};
+
+// ─── ES / RISK FIELD KNOWLEDGE ───────────────────────────────────────────────
+var ES_FIELDS = {
+  risk_score:       'Splunk ES Risk Framework field. The numeric risk score assigned to a risk event by a correlation search. Higher = more suspicious.',
+  risk_object:      'Splunk ES Risk Framework field. The entity being scored — typically a username, hostname, or IP address.',
+  risk_object_type: 'Splunk ES Risk Framework field. The type of the risk object: "user", "system", or "other".',
+  risk_message:     'Splunk ES Risk Framework field. A human-readable description of why this risk event was generated.',
+  source:           'In risk index context: the name of the correlation search that generated this risk event.',
+  annotations:      'Splunk ES field. JSON blob containing MITRE ATT&CK technique IDs and other metadata attached to a correlation search.',
+  'annotations.mitre_attack.technique_id': 'MITRE ATT&CK technique ID attached to this risk/notable event.',
+  rule_name:        'Splunk ES field. The name of the correlation search rule that triggered this notable or risk event.',
+  rule_title:       'Splunk ES field. The display title of the triggered correlation search.',
+  owner:            'Splunk ES notable field. The analyst assigned to this notable event.',
+  status:           'Splunk ES notable field. The current review status (1=New, 2=In Progress, 3=Pending, 4=Resolved, 5=Closed).',
+  urgency:          'Splunk ES notable field. The computed urgency combining severity and asset/identity priority.',
+  severity:         'Splunk ES field. Severity classification of the event or notable.',
+  priority:         'Splunk ES asset/identity field. Priority level of the asset or user.',
+  security_domain:  'Splunk ES field. The security domain: network, endpoint, access, threat, identity, or audit.',
+  dest:             'CIM normalized destination field. Hostname, IP, or FQDN of the destination.',
+  src:              'CIM normalized source field. Hostname, IP, or FQDN of the source.',
+  user:             'CIM normalized user field. The username associated with the event.',
+  action:           'CIM normalized action field. What happened: allowed, blocked, success, failure, etc.',
+  app:              'CIM normalized application field.',
+  tag:              'CIM/ES tag field. Event type tags applied by tag configuration.',
+  'tag::eventtype':  'CIM field. Tags associated with the event type assigned to this event.',
+  event_id:         'Splunk ES notable field. Unique identifier for a notable event.',
+  orig_event_id:    'Splunk ES field. The event ID of the original source event that triggered this notable.',
+  orig_index:       'Splunk ES notable field. The original index the source event came from.',
+  orig_sourcetype:  'Splunk ES notable field. The sourcetype of the original source event.',
+  info_min_time:    'Splunk search job metadata field (added by addinfo). Earliest time of the search window.',
+  info_max_time:    'Splunk search job metadata field (added by addinfo). Latest time of the search window.',
+  savedsearch_description: 'ES field. The description of the saved search that generated this result.',
+  drilldown_search: 'ES notable field. The SPL drilldown search configured for this correlation search.',
+};
+
+// ─── MITRE ATT&CK DETECTION HINTS ────────────────────────────────────────────
+var MITRE_PATTERNS = [
+  // T1059 - Command and Scripting Interpreter
+  {patterns:[/powershell/i,/commandline/i], technique:'T1059.001', name:'Command and Scripting Interpreter: PowerShell'},
+  {patterns:[/cmd\.exe/i,/commandline/i],  technique:'T1059.003', name:'Command and Scripting Interpreter: Windows Command Shell'},
+  {patterns:[/wscript|cscript|\.vbs|\.js/i], technique:'T1059.005', name:'Command and Scripting Interpreter: Visual Basic'},
+  {patterns:[/bash|sh|python|perl/i],   technique:'T1059.004', name:'Command and Scripting Interpreter: Unix Shell'},
+  // T1078 - Valid Accounts
+  {patterns:[/EventCode=4625|failed.login|logon.*fail/i], technique:'T1078', name:'Valid Accounts (Brute Force / Failed Auth)'},
+  {patterns:[/EventCode=4624|logon.*success/i],           technique:'T1078', name:'Valid Accounts (Successful Logon)'},
+  // T1003 - Credential Dumping
+  {patterns:[/lsass/i],  technique:'T1003.001', name:'OS Credential Dumping: LSASS Memory'},
+  {patterns:[/mimikatz|sekurlsa|logonpasswords/i], technique:'T1003', name:'OS Credential Dumping'},
+  // T1055 - Process Injection
+  {patterns:[/CreateRemoteThread|VirtualAllocEx|WriteProcessMemory/i], technique:'T1055', name:'Process Injection'},
+  // T1021 - Remote Services
+  {patterns:[/psexec|wmiexec|winrm|RemoteInteractive/i], technique:'T1021', name:'Remote Services'},
+  {patterns:[/EventCode=4648|runas/i], technique:'T1021', name:'Remote Services: Explicit Credentials'},
+  // T1543 - Persistence via Services
+  {patterns:[/EventCode=7045|sc\.exe.*create|New-Service/i], technique:'T1543.003', name:'Create or Modify System Process: Windows Service'},
+  // T1547 - Persistence via Registry
+  {patterns:[/\\CurrentVersion\\Run|\\Winlogon|userinit/i], technique:'T1547.001', name:'Boot or Logon Autostart Execution: Registry Run Keys'},
+  // T1566 - Phishing
+  {patterns:[/\.eml|\.msg|attachment|phish/i], technique:'T1566', name:'Phishing'},
+  // T1190 - Exploit Public-Facing Application
+  {patterns:[/exploit|CVE-|sql.*injection|sqli/i], technique:'T1190', name:'Exploit Public-Facing Application'},
+  // T1071 - C2 over Application Layer
+  {patterns:[/dns.*tunnel|dnscat|iodine/i], technique:'T1071.004', name:'Application Layer Protocol: DNS'},
+  {patterns:[/beacon|cobalt.*strike|c2|command.*control/i], technique:'T1071', name:'Application Layer Protocol (C2)'},
+  // T1110 - Brute Force
+  {patterns:[/brute|password.*spray|spray.*password/i], technique:'T1110', name:'Brute Force'},
+  // T1486 - Ransomware
+  {patterns:[/ransom|encrypt.*file|\.locked|vssadmin.*delete/i], technique:'T1486', name:'Data Encrypted for Impact (Ransomware)'},
+  // T1562 - Impair Defenses
+  {patterns:[/defender.*disable|antivirus.*off|auditpol/i], technique:'T1562', name:'Impair Defenses'},
+  // T1105 - Ingress Transfer
+  {patterns:[/certutil.*urlcache|bitsadmin.*transfer|Invoke-WebRequest|wget|curl/i], technique:'T1105', name:'Ingress Tool Transfer'},
+  // T1218 - LOLBins
+  {patterns:[/regsvr32|mshta|wmic|rundll32|certutil/i], technique:'T1218', name:'System Binary Proxy Execution (LOLBin)'},
+  // T1548 - Privilege Escalation
+  {patterns:[/runas|SeDebugPrivilege|token.*elevat/i], technique:'T1548', name:'Abuse Elevation Control Mechanism'},
+  // T1136 - Account Creation
+  {patterns:[/EventCode=4720|net user.*\/add|New-LocalUser/i], technique:'T1136', name:'Create Account'},
+  // T1069 - Permission Groups Discovery
+  {patterns:[/EventCode=4732|net group|net localgroup/i], technique:'T1069', name:'Permission Groups Discovery'},
+  // T1053 - Scheduled Tasks
+  {patterns:[/schtasks|at\.exe|Task Scheduler/i], technique:'T1053', name:'Scheduled Task/Job'},
+  // T1027 - Obfuscation
+  {patterns:[/base64|FromBase64|EncodedCommand|-enc/i], technique:'T1027', name:'Obfuscated Files or Information'},
+  // T1036 - Masquerading
+  {patterns:[/masquerad|svchost.*unusual|lsass.*unusual/i], technique:'T1036', name:'Masquerading'},
+  // T1047 - WMI
+  {patterns:[/wmic|Win32_Process|WMI/i], technique:'T1047', name:'Windows Management Instrumentation'},
+  // T1569 - System Services
+  {patterns:[/sc\.exe|services\.msc|StartService/i], technique:'T1569', name:'System Services'},
+  // T1040 - Network Sniffing
+  {patterns:[/promiscuous|tcpdump|wireshark|pcap/i], technique:'T1040', name:'Network Sniffing'},
+];
+
+// ─── PERFORMANCE CHECKS ───────────────────────────────────────────────────────
+function checkPerformance(q) {
+  var warnings = [];
+  var ql = q.toLowerCase();
+
+  // No index filter
+  if (!/(^|\s)index\s*=/.test(q) && !/\|\s*tstats/.test(q) && !/\|\s*inputlookup/.test(q) && !/\|\s*makeresults/.test(q)) {
+    warnings.push({level:'error', icon:'🔴', msg:'<strong>No index filter detected.</strong> This search will scan ALL indexes. Add <code>index=&lt;name&gt;</code> as the first filter to dramatically reduce data scanned.'});
+  }
+
+  // No sourcetype filter (when not a tstats/transformation search)
+  if (!/(^|\s)sourcetype\s*=/.test(q) && !/(^|\s)source\s*=/.test(q) && !/\|\s*tstats/.test(ql) && !/\|\s*inputlookup/.test(ql) && !/\|\s*makeresults/.test(ql) && !q.trim().startsWith('`') ) {
+    warnings.push({level:'warn', icon:'🟡', msg:'<strong>No sourcetype filter.</strong> Adding <code>sourcetype=</code> alongside your index filter narrows the dataset further and speeds up field extraction.'});
+  }
+
+  // Leading wildcard
+  if (/[=\s]\*[a-zA-Z]/.test(q) || /[=\s]\*"/.test(q)) {
+    warnings.push({level:'error', icon:'🔴', msg:'<strong>Leading wildcard detected.</strong> Patterns like <code>value=*word</code> force a full scan and cannot use index bloom filters. Try reversing: filter broadly first, then regex out the specific pattern.'});
+  }
+
+  // Wildcard-only search
+  if (/[=\s]\*(\s|$|[|,)])/g.test(q)) {
+    warnings.push({level:'warn', icon:'🟡', msg:'<strong>Wildcard-only field filter.</strong> A bare <code>field=*</code> matches all non-null values and is rarely useful as a filter. Remove it or replace with a meaningful value.'});
+  }
+
+  // join instead of lookup/stats
+  if (/\|\s*join\s/.test(ql)) {
+    warnings.push({level:'warn', icon:'🟡', msg:'<strong>join command detected.</strong> <code>join</code> is memory-intensive and does not scale well. Consider replacing with a <code>lookup</code> table, a <code>stats</code> aggregation, or a subsearch if the joined dataset is small.'});
+  }
+
+  // map command
+  if (/\|\s*map\s/.test(ql)) {
+    warnings.push({level:'error', icon:'🔴', msg:'<strong>map command detected.</strong> <code>map</code> executes one sub-search per input row — this can spawn hundreds of concurrent searches. Use sparingly and always set <code>maxsearches=</code> to a low value.'});
+  }
+
+  // tstats without summariesonly
+  if (/\|\s*tstats\s/.test(ql) && !/summariesonly\s*=\s*true/.test(ql)) {
+    warnings.push({level:'info', icon:'🔵', msg:'<strong>tstats without summariesonly=true.</strong> Without this flag, tstats falls back to scanning raw events for data not yet summarized, which can be slow. Add <code>summariesonly=true</code> if you accept potentially missing recent events.'});
+  }
+
+  // subsearch — warn about limits
+  if (/\[/.test(q) && !/^\[/.test(q.trim())) {
+    warnings.push({level:'info', icon:'🔵', msg:'<strong>Subsearch detected.</strong> Subsearches are limited to 10,000 results and 60 seconds by default. Large subsearches silently truncate. Consider a <code>lookup</code> or <code>join</code> on a saved CSV for larger datasets.'});
+  }
+
+  // transaction instead of stats
+  if (/\|\s*transaction\s/.test(ql)) {
+    warnings.push({level:'warn', icon:'🟡', msg:'<strong>transaction command detected.</strong> <code>transaction</code> is memory-intensive and slow on large datasets. If you only need counts or durations, <code>stats</code> with <code>by</code> is usually 10–100x faster.'});
+  }
+
+  // No time bounds
+  if (!/(earliest|latest)\s*=/.test(ql) && !/(^|\s)index\s*=/.test(q)) {
+    // only warn if not tstats
+    if (!/\|\s*tstats/.test(ql)) {
+      warnings.push({level:'warn', icon:'🟡', msg:'<strong>No explicit time range.</strong> Without <code>earliest=</code> / <code>latest=</code>, the search uses the time picker value. For scheduled or automated searches, always set explicit time bounds.'});
+    }
+  }
+
+  // dedup on large data
+  if (/\|\s*dedup\s/.test(ql)) {
+    warnings.push({level:'info', icon:'🔵', msg:'<strong>dedup detected.</strong> <code>dedup</code> streams all data through memory to track seen values. For counting unique values, <code>stats dc(field)</code> is faster. For grouping, consider <code>stats first() by field</code>.'});
+  }
+
+  return warnings;
+}
+
+// ─── SEARCH TYPE DETECTOR ──────────────────────────────────────────────────────
+function detectSearchType(q) {
+  var ql = q.toLowerCase().trim();
+
+  if (/^`notable`/.test(ql) || /index\s*=\s*notable/.test(ql)) {
+    return {type:'notable', icon:'🔔', label:'Splunk ES Notable Review', desc:'This search queries the Splunk Enterprise Security notable events index — the incident queue used by SOC analysts for triage and investigation.'};
+  }
+  if (/index\s*=\s*risk|source\s*=\s*risk_rule|risk_object|risk_score/.test(ql)) {
+    return {type:'risk', icon:'⚠️', label:'Risk-Based Alerting (RBA) Search', desc:'This search works with Splunk ES Risk Framework data. It likely aggregates risk scores across a risk object (user or system) to trigger when cumulative risk exceeds a threshold.'};
+  }
+  if (/\|\s*tstats\s/.test(ql)) {
+    return {type:'tstats', icon:'⚡', label:'Accelerated Data Model Search (tstats)', desc:'This search uses tstats against a CIM data model acceleration. It bypasses raw event processing and reads pre-built index summaries — typically 10–100x faster than equivalent SPL.'};
+  }
+  if (/outputlookup/.test(ql)) {
+    return {type:'lookup-gen', icon:'📋', label:'Lookup-Generating Search', desc:'This search writes its results to an external lookup table. It is likely scheduled to refresh a CSV or KV Store used for enrichment in other searches.'};
+  }
+  if (/\|\s*(timechart|chart|stats)\s/.test(ql) && !/outputlookup/.test(ql)) {
+    return {type:'report', icon:'📊', label:'Reporting / Aggregation Search', desc:'This search aggregates and summarizes data, producing a table or chart. It is likely used in a dashboard panel or scheduled report rather than as a real-time detection.'};
+  }
+  return null;
+}
+
+// ─── MITRE MATCHER ─────────────────────────────────────────────────────────────
+function detectMitre(q) {
+  var hits = [];
+  var seen = {};
+  for (var i=0;i<MITRE_PATTERNS.length;i++) {
+    var mp = MITRE_PATTERNS[i];
+    var allMatch = mp.patterns.every(function(p){ return p.test(q); });
+    var anyMatch = mp.patterns.length === 1 && mp.patterns[0].test(q);
+    if ((allMatch || anyMatch) && !seen[mp.technique]) {
+      seen[mp.technique] = true;
+      hits.push(mp);
+    }
+  }
+  return hits;
+}
+
+// ─── SPL KNOWLEDGE BASE ──────────────────────────────────────────────────────
+var CMD_INFO = {
+  search:     {desc:'Filters events matching the given criteria. The default command; often implicit at the start of a search.',note:'Adding index= and sourcetype= early limits the dataset and improves performance.'},
+  index:      {desc:'Specifies which Splunk index to search. Limits the data source to a named index.',note:'Always specify an index to avoid searching All Data, which is expensive.'},
+  stats:      {desc:'Computes aggregate statistics over the result set — counts, sums, averages, etc.',note:'stats reduces rows. Use it to summarize large datasets. Faster than chart for non-time data.'},
+  chart:      {desc:'Produces a table suitable for charting, with one column per distinct value of the "over" field.',note:'Use over <field> by <field> syntax. Good for time-series visualizations.'},
+  timechart:  {desc:'Creates a time-series chart, automatically bucketing results by _time.',note:'Default span is auto-calculated. Specify span=1h, span=5m, etc. for control.'},
+  eval:       {desc:'Creates or overwrites a field using an expression. Supports math, string, conditional, and time functions.',note:'eval fields only exist in the result set; they are not written back to the index.'},
+  where:      {desc:'Filters results using a boolean expression. Similar to SQL WHERE. Uses eval-style syntax.',note:'Unlike search, where evaluates expressions — use it after stats or eval for numeric comparisons.'},
+  rex:        {desc:'Extracts fields from raw text using a named-capture regular expression.',note:'Use field= to target a specific field. Default is _raw. Named groups become new fields.'},
+  regex:      {desc:'Filters results where the specified field matches a regular expression.',note:'regex removes non-matching events entirely, unlike rex which extracts fields.'},
+  table:      {desc:'Returns only the specified fields, in the given column order.',note:'Drops all other fields. Use this at the end of a search to clean up output.'},
+  fields:     {desc:'Keeps or removes specific fields from the result set.',note:'fields + field1,field2 keeps only those fields. fields - field1 removes them.'},
+  sort:       {desc:'Sorts results by one or more fields. Prefix with - for descending, + for ascending.',note:'Default is ascending. sort -count gives highest count first.'},
+  head:       {desc:'Returns only the first N events (default 10).',note:'Use after sort to get top-N results. Equivalent to SQL LIMIT.'},
+  tail:       {desc:'Returns the last N events.',note:'Useful for seeing the most recent events in a time-ordered result set.'},
+  dedup:      {desc:'Removes duplicate events based on the specified field(s), keeping only the first occurrence.',note:'dedup is resource-intensive on large datasets. Consider stats first.'},
+  rename:     {desc:'Renames a field. Use "AS" syntax: rename old_field AS new_field.',note:'Wildcards are supported: rename All_Traffic.* AS *.'},
+  transaction:{desc:'Groups events into transactions based on shared field values, with optional time constraints.',note:'maxspan sets the max duration. maxpause sets the max idle time between events. eventcount and duration fields are added automatically.'},
+  lookup:     {desc:'Enriches events by joining against an external lookup table (CSV or KV Store).',note:'OUTPUT or OUTPUTNEW specifies which fields to add. Use inputlookup to load a full table.'},
+  inputlookup:{desc:'Loads all rows from a lookup table as the search results, without requiring an index search.',note:'Useful for dashboards driven by lookup data or for joins.'},
+  outputlookup:{desc:'Writes current results into a lookup table (CSV file or KV Store collection).',note:'append=true adds rows instead of overwriting.'},
+  tstats:     {desc:'High-performance stats command that runs against indexed data models instead of raw events.',note:'summariesonly=true uses only pre-built accelerated summaries — much faster but may miss recent data.'},
+  datamodel:  {desc:'References a Splunk data model for structured, accelerated searching.',note:'Data models must be accelerated for tstats to benefit from summary data.'},
+  makeresults:{desc:'Generates synthetic events without searching the index. Useful for testing and dashboards.',note:'count= sets the number of synthetic events. annotate=true adds metadata fields.'},
+  appendcols: {desc:'Appends the fields from a sub-search as new columns to the current result set.',note:'Row counts must match between the main search and sub-search, or results may misalign.'},
+  append:     {desc:'Appends the results of a sub-search as additional rows.',note:'Unlike appendcols, this adds rows not columns.'},
+  join:       {desc:'Joins the current results with a sub-search on a shared field, similar to SQL JOIN.',note:'inner (default) or left join types. Avoid join on large datasets; lookup or stats are usually faster.'},
+  fillnull:   {desc:'Replaces null field values with a specified string (default is 0).',note:'Use value= to set a custom replacement string, e.g. fillnull value="N/A".'},
+  filldown:   {desc:'Fills null values in a field by carrying the last non-null value forward.',note:'Useful after stats or transpose when sparse fields have gaps.'},
+  convert:    {desc:'Converts field values to different types, e.g. ctime(), num(), dur2sec().',note:'Common use: convert ctime(_time) to make timestamps human-readable.'},
+  strftime:   {desc:'Formats a Unix timestamp into a human-readable string using format codes.',note:'%Y=year %m=month %d=day %H=hour %M=minute %S=second. Returns a string, not a timestamp.'},
+  strptime:   {desc:'Parses a date/time string into a Unix epoch timestamp.',note:'Use the same format codes as strftime. Returns a numeric epoch value.'},
+  bin:        {desc:'Buckets a numeric or time field into discrete ranges.',note:'Alias: bucket. Common use: bin _time span=1h to group events by hour.'},
+  bucket:     {desc:'Alias for bin. Buckets a numeric or time field into discrete ranges.',note:''},
+  streamstats:{desc:'Computes running (cumulative) statistics as events are processed in order.',note:'Unlike stats, streamstats preserves individual events and adds a running aggregate field.'},
+  eventstats:  {desc:'Adds aggregate statistics as new fields to each event, without reducing the result count.',note:'Like stats but keeps all events. Useful for computing percent-of-total.'},
+  mvexpand:   {desc:'Expands a multi-valued field into separate events, one per value.',note:'Useful for normalizing data where a field contains comma-separated lists.'},
+  mvcombine:  {desc:'Combines multiple rows with the same field values into a single row with multi-valued fields.',note:'Inverse of mvexpand.'},
+  top:        {desc:'Returns the most common values of a field with their counts and percentages.',note:'limit= controls how many results. useother=f hides the OTHER row.'},
+  rare:       {desc:'Returns the least common values of a field — the inverse of top.',note:'Useful for finding anomalies or unusual values in high-cardinality fields.'},
+  predict:    {desc:'Uses historical data to forecast future values.',note:''},
+  anomalydetection:{desc:'Identifies statistically anomalous events based on field distributions.',note:''},
+  iplocation: {desc:'Adds geographic location fields (city, country, lat, lon) based on an IP address field.',note:'Uses MaxMind GeoIP database. Requires a field containing a valid IP address.'},
+  rest:       {desc:'Executes a REST API call against Splunk endpoints and returns the response as search results.',note:'Useful for querying Splunk configuration and metadata programmatically.'},
+  map:        {desc:'Iterates over results and runs a sub-search for each, replacing results with sub-search output.',note:'Use sparingly — runs one search per input row. Can be very slow.'},
+  addtotals:  {desc:'Computes column and/or row totals for numeric fields.',note:''},
+  geostats:   {desc:'Generates statistics for geographic data rendering on a map.',note:'Requires lat/lon fields.'},
+  metadata:   {desc:'Returns metadata about sources, sourcetypes, or hosts in an index.',note:'Use type=sources/sourcetypes/hosts. Does not read event data.'},
+  addinfo:    {desc:'Adds search job metadata as fields to each result.',note:'Adds fields like info_min_time, info_max_time, info_search_time.'},
+  format:     {desc:'Formats the output of a sub-search into a single string suitable for use in OR/AND expressions.',note:'Often used with NOT [ format ] patterns for exclusion.'},
+  'return':   {desc:'Limits sub-search output to a specified number of rows and fields.',note:'Used inside subsearches to control how much data is passed to the outer search.'},
+  transpose:  {desc:'Transposes rows and columns in the result set.',note:''},
+  untable:    {desc:'Converts a wide table into a narrow field/value table.',note:'Inverse of xyseries.'},
+  xyseries:   {desc:'Converts results into a format suitable for scatter plots.',note:''},
+  set:        {desc:'Performs set operations (union, diff, intersect) between two sub-searches.',note:''},
+  delta:      {desc:'Computes the difference between the current and previous value of a field.',note:''},
+  trendline:  {desc:'Computes a moving average trendline over a time series.',note:''},
+  accum:      {desc:'Computes a running cumulative sum of a numeric field.',note:''},
+  sistats:    {desc:'A performance-optimized version of stats for use with Summary Indexing.',note:''},
+  dbinspect:  {desc:'Inspects bucket metadata without reading event data.',note:'Useful for index storage analysis.'},
+  fieldformat:{desc:'Applies display formatting to a field without changing its underlying value.',note:'Only affects how the value is displayed in the UI.'},
+  gentimes:   {desc:'Generates time-range events between two timestamps.',note:'Useful for creating time series scaffolding.'},
+  highlight:  {desc:'Highlights matching terms in the results panel.',note:''},
+  localop:    {desc:'Forces a search pipeline step to run on the search head instead of indexers.',note:'Useful for lookups or eval operations that should not be distributed.'},
+  noop:       {desc:'A no-operation command that passes results through unchanged.',note:'Often used as a placeholder or for commenting.'},
+  abstract:   {desc:'Produces an abbreviated version of each event.',note:''},
+  multikv:    {desc:'Extracts key-value pairs from tabular data in _raw.',note:''},
+  mvfilter:   {desc:'Filters values within a multi-valued field using an expression.',note:''},
+  rangemap:   {desc:'Assigns a category label to a numeric field based on defined ranges.',note:''},
+  replace:    {desc:'Replaces field values matching a pattern with a new value.',note:''},
+  scrub:      {desc:'Anonymizes sensitive data in events.',note:''},
+  setfields:  {desc:'Sets field values for all events.',note:''},
+  extract:    {desc:'Extracts field/value pairs using existing transforms.',note:'Alias: kv.'},
+  cluster:    {desc:'Groups similar events together based on field similarity.',note:''},
+  kmeans:     {desc:'Performs k-means clustering on numeric fields.',note:''},
+  sendemail:  {desc:'Sends search results via email.',note:'Typically used in scheduled alerts.'},
+  outputcsv:  {desc:'Writes results to a CSV file on the search head.',note:''},
+  autoregress:{desc:'Sets a field to the value of a previous event field, useful for lag calculations.',note:''},
+  walklex:    {desc:'Returns lexicon information about indexed terms.',note:''},
+  pivot:      {desc:'Runs a pivot search against a data model.',note:''},
+  geom:       {desc:'Adds geographic shape data for choropleth maps.',note:''},
+  mcollect:   {desc:'Writes metric data to a metric index.',note:''},
+  typelearner:{desc:'Learns and assigns event types.',note:''},
+  typer:      {desc:'Assigns event types to results.',note:''},
+  tags:       {desc:'Returns the tags associated with field/value pairs.',note:''},
+  history:    {desc:'Returns the search history for the current user.',note:''},
+  audit:      {desc:'Returns Splunk audit log events.',note:''},
+  erex:       {desc:'Learns a regular expression from example field values and extracts matching fields.',note:''},
+  gauge:      {desc:'Formats a numeric field value as a gauge for visualization.',note:''},
+  sitimechart:{desc:'Summary-index-friendly version of timechart.',note:''},
+  sichart:    {desc:'Summary-index-friendly version of chart.',note:''},
+  sirare:     {desc:'Summary-index-friendly version of rare.',note:''},
+  sitop:      {desc:'Summary-index-friendly version of top.',note:''},
+};
+
+var FUNC_INFO = {
+  count:      {desc:'Returns the number of events.',note:'Used in stats: stats count'},
+  dc:         {desc:'Distinct count — returns the number of unique values.',note:'dc(field) counts unique values of field.'},
+  sum:        {desc:'Returns the sum of numeric values.',note:''},
+  avg:        {desc:'Returns the average (mean) of numeric values.',note:''},
+  max:        {desc:'Returns the maximum value.',note:'Works on numbers and strings (alphabetic max).'},
+  min:        {desc:'Returns the minimum value.',note:''},
+  range:      {desc:'Returns the difference between the max and min numeric values.',note:''},
+  stdev:      {desc:'Returns the standard deviation.',note:'stdevp for population standard deviation.'},
+  stdevp:     {desc:'Returns the population standard deviation.',note:''},
+  var:        {desc:'Returns the variance.',note:''},
+  varp:       {desc:'Returns the population variance.',note:''},
+  median:     {desc:'Returns the median value.',note:''},
+  mode:       {desc:'Returns the most common value.',note:''},
+  first:      {desc:'Returns the first seen value (chronologically).',note:''},
+  last:       {desc:'Returns the last seen value (chronologically).',note:''},
+  list:       {desc:'Returns a multi-valued list of all values.',note:'list(field) collects all values into a multi-value field.'},
+  values:     {desc:'Returns a deduplicated multi-valued list of all distinct values.',note:'Like list() but removes duplicates.'},
+  perc:       {desc:'Returns the Nth percentile value.',note:'perc95(field) = 95th percentile.'},
+  rate:       {desc:'Computes the rate of change over time.',note:''},
+  if:         {desc:'Conditional: if(condition, value_if_true, value_if_false).',note:'Equivalent to a ternary operator.'},
+  case:       {desc:'Multi-branch conditional: case(cond1, val1, cond2, val2, ...).',note:'Returns the value for the first true condition.'},
+  coalesce:   {desc:'Returns the first non-null value from the list of arguments.',note:'Useful for fallback field logic.'},
+  isnull:     {desc:'Returns true if the field value is null/missing.',note:''},
+  isnotnull:  {desc:'Returns true if the field value is not null.',note:''},
+  isnum:      {desc:'Returns true if the value is numeric.',note:''},
+  isstr:      {desc:'Returns true if the value is a string.',note:''},
+  like:       {desc:'Pattern match using % wildcards. like(field, "pattern%").',note:'Use % as wildcard and _ as single-char wildcard.'},
+  match:      {desc:'Returns true if a field value matches a regular expression.',note:'match(field, "regex_pattern")'},
+  lower:      {desc:'Converts a string to lowercase.',note:''},
+  upper:      {desc:'Converts a string to uppercase.',note:''},
+  len:        {desc:'Returns the character length of a string.',note:''},
+  substr:     {desc:'Extracts a substring. substr(field, start, length).',note:'Indexing starts at 1.'},
+  split:      {desc:'Splits a string into a multi-valued field. split(field, delimiter).',note:''},
+  mvcount:    {desc:'Returns the number of values in a multi-valued field.',note:''},
+  mvindex:    {desc:'Returns the Nth value from a multi-valued field.',note:'Zero-indexed.'},
+  mvjoin:     {desc:'Joins multi-valued field values into a string with a delimiter.',note:''},
+  mvappend:   {desc:'Appends values to a multi-valued field.',note:''},
+  mvdedup:    {desc:'Removes duplicates from a multi-valued field.',note:''},
+  mvsort:     {desc:'Sorts values in a multi-valued field.',note:''},
+  mvfilter:   {desc:'Filters values in a multi-valued field using an expression.',note:''},
+  trim:       {desc:'Removes leading and trailing whitespace from a string.',note:''},
+  ltrim:      {desc:'Removes leading whitespace or specified characters.',note:''},
+  rtrim:      {desc:'Removes trailing whitespace or specified characters.',note:''},
+  replace:    {desc:'Replaces occurrences of a pattern with a replacement string.',note:'replace(field, regex, replacement)'},
+  urldecode:  {desc:'Decodes a URL-encoded string.',note:'Useful for parsing web logs.'},
+  urlencode:  {desc:'URL-encodes a string.',note:''},
+  md5:        {desc:'Returns the MD5 hash of a string.',note:''},
+  sha1:       {desc:'Returns the SHA-1 hash.',note:''},
+  sha256:     {desc:'Returns the SHA-256 hash.',note:''},
+  sha512:     {desc:'Returns the SHA-512 hash.',note:''},
+  round:      {desc:'Rounds a number to N decimal places.',note:'round(field, 2)'},
+  floor:      {desc:'Returns the largest integer less than or equal to the value.',note:''},
+  ceiling:    {desc:'Returns the smallest integer greater than or equal to the value.',note:'Alias: ceil.'},
+  abs:        {desc:'Returns the absolute value.',note:''},
+  exp:        {desc:'Returns e raised to the power of the argument.',note:''},
+  log:        {desc:'Returns the natural log, or log base N if a base is specified.',note:''},
+  pow:        {desc:'Returns the value raised to a power. pow(base, exp).',note:''},
+  sqrt:       {desc:'Returns the square root.',note:''},
+  pi:         {desc:'Returns the mathematical constant pi (~3.14159).',note:''},
+  random:     {desc:'Returns a random non-negative integer.',note:''},
+  now:        {desc:'Returns the current time as a Unix epoch timestamp.',note:''},
+  relative_time:{desc:'Applies a relative time modifier to a timestamp. relative_time(now(), "-1d@d").',note:''},
+  strftime:   {desc:'Formats a Unix timestamp as a string.',note:'strftime(_time,"%Y-%m-%d %H:%M:%S")'},
+  strptime:   {desc:'Parses a time string into a Unix epoch.',note:''},
+  tostring:   {desc:'Converts a number or time to a string.',note:'tostring(num,"commas") adds thousands separators.'},
+  tonumber:   {desc:'Converts a string to a number. Optionally specify numeric base.',note:'tonumber("FF",16) = 255'},
+  typeof:     {desc:'Returns the data type of a field value as a string.',note:'Returns "Number", "String", "Boolean", or "Null".'},
+  cidrmatch:  {desc:'Returns true if an IP address matches a CIDR range.',note:'cidrmatch("192.168.1.0/24", ip_field) — essential for network searches.'},
+  searchmatch:{desc:'Returns true if the event matches the given search string.',note:''},
+  in:         {desc:'Returns true if the value is in the specified list.',note:'field IN (val1,val2,val3) syntax.'},
+  validate:   {desc:'Returns the first error message where a condition is false, else null.',note:'Useful for data validation.'},
+  lookup:     {desc:'Performs a lookup within an eval expression.',note:''},
+};
+
+var KEYWORD_INFO = {
+  by:         'Groups results — used after stats functions to specify the grouping field(s).',
+  as:         'Aliases a field to a new name. Used in stats, eval, rename, tstats.',
+  where:      'Filters results using a boolean expression (eval syntax).',
+  from:       'Specifies the data source — used in tstats to point to a data model.',
+  over:       'Used in chart: specifies the X-axis field.',
+  in:         'Used to specify a list of values (field IN (a,b,c)) or in tstats pipelines.',
+  not:        'Boolean NOT operator. Negates a condition.',
+  and:        'Boolean AND operator. Both conditions must be true.',
+  or:         'Boolean OR operator. Either condition must be true.',
+  like:       'Pattern matching using SQL-style % wildcards.',
+  earliest:   'Time modifier: sets the start of the time range. e.g. earliest=-24h',
+  latest:     'Time modifier: sets the end of the time range.',
+  maxspan:    'transaction: maximum total duration of a transaction.',
+  maxpause:   'transaction: maximum idle gap allowed between events in a transaction.',
+  maxevents:  'transaction: maximum number of events in a single transaction.',
+  startswith:  'transaction: field value that marks the start of a transaction.',
+  endswith:    'transaction: field value that marks the end of a transaction.',
+  summariesonly:'tstats: if true, only uses pre-built accelerated data model summaries.',
+  append:     'Used in some commands to add results rather than replace.',
+  output:     'lookup: specifies which fields to output from the lookup table.',
+  outputnew:  'lookup: outputs lookup fields only if they are not already present.',
+  limit:      'Sets the maximum number of results returned.',
+  span:       'Sets the time bucket size for bin/timechart. e.g. span=1h',
+  value:      'fillnull: the replacement string for null values.',
+  field:      'rex: specifies which field to apply the regex to (default _raw).',
+  mode:       'rex: sed mode for find-and-replace.',
+  annotate:   'makeresults: adds metadata fields when true.',
+  asc:        'Ascending sort order.',
+  desc:       'Descending sort order.',
+  useother:   'top/rare: whether to include an "OTHER" row.',
+  showcount:  'top/rare: whether to show a count column.',
+  showperc:   'top/rare: whether to show a percentage column.',
+  countfield:  'top: name for the count column.',
+  percentfield:'top: name for the percent column.',
+  dedup_splitvals:'dedup: splits multi-valued fields before deduplication.',
+  keepempty:  'Keeps events with empty field values.',
+  consecutive:'dedup: only removes consecutive duplicate events.',
+  sortby:     'Specifies the sort field for dedup.',
+};
+
+var TIME_PATTERNS = [
+  {re:/^-?\d+s(@\w+)?$/i,      desc:'Relative time: seconds ago from now.'},
+  {re:/^-?\d+m(@\w+)?$/i,      desc:'Relative time: minutes ago from now.'},
+  {re:/^-?\d+h(@\w+)?$/i,      desc:'Relative time: hours ago from now.'},
+  {re:/^-?\d+d(@\w+)?$/i,      desc:'Relative time: days ago from now.'},
+  {re:/^-?\d+w(@\w+)?$/i,      desc:'Relative time: weeks ago from now.'},
+  {re:/^-?\d+mon(@\w+)?$/i,    desc:'Relative time: months ago from now.'},
+  {re:/^-?\d+y(@\w+)?$/i,      desc:'Relative time: years ago from now.'},
+  {re:/^@(s|m|h|d|w|mon|y)$/i, desc:'Snaps to the start of the current time unit (floor).'},
+  {re:/^now$/i,                 desc:'The current time at query execution.'},
+  {re:/^\d{1,2}\/\d{1,2}\/\d{4}(:\d{2}:\d{2}:\d{2})?$/, desc:'Absolute timestamp in MM/DD/YYYY:HH:MM:SS format.'},
+  {re:/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?$/, desc:'Absolute timestamp in ISO 8601 format.'},
+];
+
+// ─── TOKENIZER ───────────────────────────────────────────────────────────────
+function classify(tok, prev, context) {
+  var t = tok.trim();
+  if (!t) return null;
+
+  // Macro: backtick-wrapped
+  if (/^`[^`]+`$/.test(t)) {
+    var inner = t.slice(1, -1);
+    // Strip arguments like macro_name(arg)
+    var macroName = inner.replace(/\(.*\)$/, '').trim();
+    var macroArgs = inner.match(/\((.*)\)$/);
+    var mi = MACRO_INFO[macroName];
+    var argStr = macroArgs ? ' with argument: <strong>' + esc(macroArgs[1]) + '</strong>' : '';
+    if (mi) {
+      return {text:t, type:'macro', desc:'Macro: <strong>'+esc(macroName)+'</strong>'+argStr+'. '+mi.desc, note:mi.tip, isMacro:true, macroName:macroName};
+    }
+    return {text:t, type:'macro', desc:'Splunk macro call: <strong>'+esc(macroName)+'</strong>'+argStr+'. Macros are reusable saved search snippets defined in macros.conf. This macro expands to an inline SPL expression at search time.', note:'Macro definitions are environment-specific — check Settings > Advanced Search > Search Macros to see the expansion. Paste the expanded query above to explain it.', isMacro:true, macroName:macroName};
+  }
+
+  // Pipe
+  if (t === '|') return {text:t, type:'pipe', desc:'Pipeline operator — passes results from the left command to the right command.', note:'SPL processes left-to-right. Each pipe reduces or transforms the dataset.'};
+
+  // Parentheses
+  if (t === '(' || t === ')') return {text:t, type:'paren', desc: t==='(' ? 'Opens a grouped expression or sub-search.' : 'Closes a grouped expression or sub-search.', note:''};
+
+  // Comma
+  if (t === ',') return {text:t, type:'comma', desc:'Separates multiple field names or arguments.', note:''};
+
+  // Boolean operators
+  if (/^(AND|OR|NOT)$/i.test(t)) return {text:t, type:'operator', desc: KEYWORD_INFO[t.toLowerCase()] || 'Boolean operator.', note:''};
+
+  // Comparison operators
+  if (/^(!=|<=|>=|=|<|>)$/.test(t)) {
+    var opDesc = {'=':'Equality operator.','!=':'Inequality operator.','>'  :'Greater-than comparison.','<':'Less-than comparison.','>=':'Greater-than-or-equal comparison.','<=':'Less-than-or-equal comparison.'};
+    return {text:t, type:'operator', desc:opDesc[t]||'Comparison operator.', note:''};
+  }
+
+  // Time modifiers
+  for (var i=0;i<TIME_PATTERNS.length;i++) {
+    if (TIME_PATTERNS[i].re.test(t)) {
+      return {text:t, type:'time', desc:TIME_PATTERNS[i].desc, note:'Time modifiers are relative to the wall clock when the search runs, not event time.'};
+    }
+  }
+
+  // Quoted string
+  if (/^["'].*["']$/.test(t)) return {text:t, type:'string', desc:'A quoted string literal value.', note:'Quotes are required when a value contains spaces, special characters, or regex patterns.'};
+
+  // Numbers
+  if (/^-?\d+(\.\d+)?$/.test(t)) return {text:t, type:'number', desc:'A numeric literal value: ' + t + '.', note:''};
+
+  // Wildcard-only
+  if (t === '*') return {text:t, type:'wildcard', desc:'Wildcard: matches any value or any number of characters.', note:'A bare * in the search string matches all events. As a suffix (host=web*) it matches any value starting with "web".'};
+
+  // Check if this looks like a command
+  var tl = t.toLowerCase();
+  if (CMD_INFO[tl]) {
+    var ci = CMD_INFO[tl];
+    return {text:t, type:'command', desc:ci.desc, note:ci.note};
+  }
+
+  // function call like count(), avg(field)
+  var funcMatch = t.match(/^(\w+)\((.*)\)$/);
+  if (funcMatch) {
+    var fn = funcMatch[1].toLowerCase();
+    var arg = funcMatch[2];
+    if (FUNC_INFO[fn]) {
+      return {text:t, type:'function', desc:FUNC_INFO[fn].desc + (arg ? ' Applied to field: <strong>'+esc(arg)+'</strong>.' : ''), note:FUNC_INFO[fn].note};
+    }
+    return {text:t, type:'function', desc:'Function call: <strong>'+esc(fn)+'()</strong>' + (arg ? ' on field <strong>'+esc(arg)+'</strong>' : '') + '.', note:''};
+  }
+
+  if (FUNC_INFO[tl]) {
+    return {text:t, type:'function', desc:FUNC_INFO[tl].desc, note:FUNC_INFO[tl].note};
+  }
+
+  // Keywords
+  if (KEYWORD_INFO[tl]) {
+    return {text:t, type:'keyword', desc:KEYWORD_INFO[tl], note:''};
+  }
+
+  // field=value or field!=value or field>=value etc
+  var kvMatch = t.match(/^([\w.\-]+)(=|!=|<=|>=|<|>)(.+)$/);
+  if (kvMatch) {
+    var field = kvMatch[1], op = kvMatch[2], val = kvMatch[3];
+    var fl = field.toLowerCase();
+
+    if (fl === 'index') {
+      return {text:t, type:'index', desc:'Filters to the Splunk index named <strong>'+esc(val)+'</strong>. Only events stored in this index will be searched.', note:'Specifying index= early dramatically reduces search scope and cost.'};
+    }
+    if (fl === 'sourcetype') {
+      return {text:t, type:'sourcetype', desc:'Filters to sourcetype <strong>'+esc(val)+'</strong>. Sourcetypes define the format/parsing rules for events.', note:'Always pair sourcetype= with index= to constrain the search.'};
+    }
+    if (fl === 'source') {
+      return {text:t, type:'field', desc:'Filters to events from source <strong>'+esc(val)+'</strong>.', note:''};
+    }
+    if (fl === 'host') {
+      return {text:t, type:'field', desc:'Filters to events from host <strong>'+esc(val)+'</strong>.', note:''};
+    }
+    if (fl === 'earliest') {
+      return {text:t, type:'time', desc:'Sets the search start time to <strong>'+esc(val)+'</strong>.', note:'earliest= and latest= define the time range of the search window.'};
+    }
+    if (fl === 'latest') {
+      return {text:t, type:'time', desc:'Sets the search end time to <strong>'+esc(val)+'</strong>.', note:''};
+    }
+    if (fl === 'eventtype') {
+      return {text:t, type:'keyword', desc:'Filters to events matching event type <strong>'+esc(val)+'</strong>.', note:'Event types are saved search filters defined in Splunk config.'};
+    }
+    if (fl === 'tag') {
+      return {text:t, type:'keyword', desc:'Filters to events with tag <strong>'+esc(val)+'</strong>.', note:''};
+    }
+    if (fl === 'datamodel') {
+      return {text:t, type:'keyword', desc:'References the data model <strong>'+esc(val)+'</strong>.', note:'Data models are structured schemas used with tstats and pivot.'};
+    }
+
+    // ES/Risk fields
+    if (ES_FIELDS[field]) {
+      var opDesc2 = op==='=' ? 'equals' : op==='!=' ? 'does not equal' : op==='>' ? 'is greater than' : op==='<' ? 'is less than' : op==='>=' ? 'is greater than or equal to' : 'is less than or equal to';
+      var isRiskField = ['risk_score','risk_object','risk_object_type','risk_message'].indexOf(fl) >= 0;
+      return {text:t, type: isRiskField ? 'risk' : 'es-field', desc:'<span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);font-weight:700;">ES Field</span> <strong>'+esc(field)+'</strong> '+opDesc2+' <strong>'+esc(val)+'</strong>. '+ES_FIELDS[field], note:''};
+    }
+
+    if (/[*?]/.test(val)) {
+      return {text:t, type:'wildcard', desc:'Wildcard filter: field <strong>'+esc(field)+'</strong> matches pattern <strong>'+esc(val)+'</strong>.', note:'* matches any sequence of characters. ? matches a single character. Leading wildcards (*word) force a full scan.'};
+    }
+
+    for (var ti=0;ti<TIME_PATTERNS.length;ti++) {
+      if (TIME_PATTERNS[ti].re.test(val)) {
+        return {text:t, type:'time', desc:'Sets <strong>'+esc(field)+'</strong> to relative time <strong>'+esc(val)+'</strong>. '+TIME_PATTERNS[ti].desc, note:''};
+      }
+    }
+
+    // Check ES fields without operator
+    if (ES_FIELDS[field]) {
+      return {text:t, type:'es-field', desc:'<span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);font-weight:700;">ES Field</span> '+ES_FIELDS[field], note:''};
+    }
+
+    var opDesc3 = op==='=' ? 'equals' : op==='!=' ? 'does not equal' : op==='>' ? 'is greater than' : op==='<' ? 'is less than' : op==='>=' ? 'is greater than or equal to' : 'is less than or equal to';
+    return {text:t, type:'field', desc:'Filter: field <strong>'+esc(field)+'</strong> '+opDesc3+' <strong>'+esc(val)+'</strong>.', note:''};
+  }
+
+  // Standalone field name
+  if (/^[\w.\-:]+$/.test(t) && !/^\d/.test(t)) {
+    if (t.indexOf('.') > -1) {
+      return {text:t, type:'field', desc:'Data model field path: <strong>'+esc(t)+'</strong>. The dotted notation represents <em>dataset.field</em> in a data model.', note:'Used in tstats queries referencing accelerated data models.'};
+    }
+    // Check ES fields
+    if (ES_FIELDS[t]) {
+      var isRisk = ['risk_score','risk_object','risk_object_type','risk_message'].indexOf(tl) >= 0;
+      return {text:t, type: isRisk?'risk':'es-field', desc:'<span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--green);font-weight:700;">ES Field</span> <strong>'+esc(t)+'</strong>: '+ES_FIELDS[t], note:''};
+    }
+    return {text:t, type:'field', desc:'Field name: <strong>'+esc(t)+'</strong>.', note:''};
+  }
+
+  return {text:t, type:'unknown', desc:'Token: <strong>'+esc(t)+'</strong>.', note:''};
+}
+
+// ─── LEXER ────────────────────────────────────────────────────────────────────
+function lex(str) {
+  var tokens = [];
+  var i = 0, len = str.length;
+  while (i < len) {
+    if (/\s/.test(str[i])) { i++; continue; }
+    if (str[i] === '|') { tokens.push('|'); i++; continue; }
+    if (str[i] === '(' || str[i] === ')') { tokens.push(str[i]); i++; continue; }
+    if (str[i] === ',') { tokens.push(','); i++; continue; }
+    // Backtick macro
+    if (str[i] === '`') {
+      var s = '`'; i++;
+      while (i < len && str[i] !== '`') { s += str[i]; i++; }
+      if (i < len) { s += '`'; i++; }
+      tokens.push(s);
+      continue;
+    }
+    if (str[i] === '"' || str[i] === "'") {
+      var q = str[i], s = q; i++;
+      while (i < len) {
+        if (str[i] === '\\') { s += str[i] + (str[i+1]||''); i+=2; continue; }
+        s += str[i];
+        if (str[i] === q) { i++; break; }
+        i++;
+      }
+      tokens.push(s);
+      continue;
+    }
+    if (str[i] === '[') {
+      var depth=1, s='['; i++;
+      while (i < len && depth > 0) {
+        if (str[i]==='[') depth++;
+        if (str[i]===']') depth--;
+        s += str[i]; i++;
+      }
+      tokens.push(s);
+      continue;
+    }
+    if ('!<>='.indexOf(str[i]) >= 0) {
+      var op = str[i]; i++;
+      if (i < len && str[i] === '=') { op += '='; i++; }
+      if (tokens.length > 0 && /^[\w.\-:*?`]+$/.test(tokens[tokens.length-1])) {
+        var j = i;
+        while (j < len && !/[\s,|()'"\[\]]/.test(str[j])) j++;
+        if (j > i) {
+          var field = tokens.pop();
+          var val = str.slice(i, j);
+          tokens.push(field + op + val);
+          i = j;
+          continue;
+        }
+      }
+      tokens.push(op);
+      continue;
+    }
+    var s = '';
+    while (i < len && !/[\s,|()'"\[\]]/.test(str[i]) && str[i] !== '!' && !(str[i]==='>' || str[i]==='<' || str[i]==='=')) {
+      s += str[i]; i++;
+    }
+    if (s && i < len && ('!<>='.indexOf(str[i]) >= 0)) {
+      var op = str[i]; i++;
+      if (i < len && str[i]==='=') { op+='='; i++; }
+      var val = '';
+      if (i < len && (str[i]==='"' || str[i]==="'")) {
+        var q=str[i]; val=q; i++;
+        while(i<len){
+          if(str[i]==='\\'){val+=str[i]+(str[i+1]||'');i+=2;continue;}
+          val+=str[i];
+          if(str[i]===q){i++;break;}
+          i++;
+        }
+      } else {
+        while (i < len && !/[\s,|()'"\[\]]/.test(str[i])) { val += str[i]; i++; }
+      }
+      tokens.push(s + op + val);
+      continue;
+    }
+    if (s) tokens.push(s);
+  }
+  return tokens;
+}
+
+function splitPipes(tokens) {
+  var stages = [], cur = [];
+  for (var i=0;i<tokens.length;i++) {
+    if (tokens[i] === '|') { stages.push(cur); cur = []; }
+    else cur.push(tokens[i]);
+  }
+  stages.push(cur);
+  return stages.filter(function(s){return s.length>0;});
+}
+
+function getStageCommand(stageTokens) {
+  if (!stageTokens.length) return '';
+  return stageTokens[0].toLowerCase();
+}
+
+// ─── RENDERER ────────────────────────────────────────────────────────────────
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+var TYPE_COLORS = {
+  command:'var(--accent)',pipe:'var(--text-muted)',field:'var(--green)',
+  value:'var(--yellow)',function:'var(--orange)',operator:'var(--purple)',
+  keyword:'var(--pink)',time:'var(--red)',string:'var(--yellow)',
+  number:'var(--orange)',wildcard:'var(--purple)',sourcetype:'#67e8f9',
+  index:'var(--pink)',subsearch:'var(--text-dim)',paren:'var(--text-muted)',
+  comma:'var(--text-muted)',equals:'var(--purple)',unknown:'var(--text-muted)',
+  macro:'#e879f9','es-field':'#34d399',risk:'var(--orange)'
+};
+
+var TYPE_LABELS = {
+  command:'Command',pipe:'Pipe',field:'Field',value:'Value',function:'Function',
+  operator:'Operator',keyword:'Keyword',time:'Time',string:'String',
+  number:'Number',wildcard:'Wildcard',sourcetype:'Sourcetype',index:'Index',
+  subsearch:'Subsearch',macro:'Macro','es-field':'ES Field',risk:'Risk Field',
+  paren:'Paren',comma:'Comma',unknown:'Unknown'
+};
+
+function run() {
+  var q = document.getElementById('spl').value.trim();
+  if (!q) return;
+  var out = document.getElementById('results');
+  out.innerHTML = '';
+  out.classList.remove('visible');
+
+  var tokens = lex(q);
+  var stages = splitPipes(tokens);
+
+  var allTyped = [];
+  var stageTyped = [];
+  stages.forEach(function(stageTokens, si) {
+    var typed = stageTokens.map(function(t,i){ return classify(t, i>0?stageTokens[i-1]:null, stageTokens); }).filter(Boolean);
+    stageTyped.push(typed);
+    allTyped = allTyped.concat(typed);
+  });
+
+  // ── Search type banner
+  var searchType = detectSearchType(q);
+  if (searchType) {
+    out.innerHTML += '<div class="search-banner '+searchType.type+'"><div class="banner-icon">'+searchType.icon+'</div><div class="banner-body"><strong>'+searchType.label+'</strong>'+searchType.desc+'</div></div>';
+  }
+
+  // ── MITRE hints
+  var mitre = detectMitre(q);
+  if (mitre.length) {
+    var mitreHtml = '<div class="mitre-block"><div class="mitre-header">Possible MITRE ATT&amp;CK Coverage</div><div class="mitre-tags">';
+    mitre.forEach(function(m){
+      mitreHtml += '<div class="mitre-tag"><span class="tid">'+m.technique+'</span><span class="tname">'+esc(m.name)+'</span></div>';
+    });
+    mitreHtml += '</div></div>';
+    out.innerHTML += mitreHtml;
+  }
+
+  // ── Performance warnings
+  var perfWarnings = checkPerformance(q);
+  if (perfWarnings.length) {
+    var perfHtml = '<div class="perf-block"><div class="perf-header">Performance &amp; Best Practice Analysis</div>';
+    perfWarnings.forEach(function(w){
+      perfHtml += '<div class="perf-pill '+w.level+'"><div class="perf-icon">'+w.icon+'</div><div class="perf-body">'+w.msg+'</div></div>';
+    });
+    perfHtml += '</div>';
+    out.innerHTML += perfHtml;
+  }
+
+  // ── Legend
+  var usedTypes = [];
+  allTyped.forEach(function(t){ if(t.type!=='comma'&&t.type!=='paren'&&usedTypes.indexOf(t.type)<0) usedTypes.push(t.type); });
+  var legendHtml = '<div class="legend">';
+  usedTypes.forEach(function(tp){
+    if (!TYPE_LABELS[tp]) return;
+    legendHtml += '<div class="lg"><div class="ld" style="background:'+TYPE_COLORS[tp]+'"></div><span>'+TYPE_LABELS[tp]+'</span></div>';
+  });
+  legendHtml += '</div>';
+  out.innerHTML += legendHtml;
+
+  // ── Render each stage
+  var globalIdx = 0;
+  stages.forEach(function(stageTokens, si) {
+    var typed = stageTyped[si];
+    var cmd = getStageCommand(stageTokens);
+    var cmdInfo = CMD_INFO[cmd] || null;
+
+    var stageEl = document.createElement('div');
+    stageEl.className = 'stage';
+    stageEl.style.animationDelay = (si * 0.07) + 's';
+
+    var headerHtml = '<div class="stage-header">';
+    headerHtml += '<span class="stage-num">STAGE '+(si+1)+'</span>';
+    if (cmdInfo) {
+      headerHtml += '<span class="stage-cmd">'+esc(cmd.toUpperCase())+'</span>';
+      headerHtml += '<span class="stage-desc">&mdash; '+cmdInfo.desc+'</span>';
+    } else if (typed.length && typed[0].type === 'macro') {
+      headerHtml += '<span class="stage-cmd" style="color:#e879f9">MACRO</span>';
+      headerHtml += '<span class="stage-desc">&mdash; Splunk macro expansion.</span>';
+    } else if (si === 0) {
+      headerHtml += '<span class="stage-cmd">SEARCH</span>';
+      headerHtml += '<span class="stage-desc">&mdash; Filters the index for events matching the specified criteria.</span>';
+    }
+    headerHtml += '</div>';
+
+    var lineHtml = '<div class="token-line">';
+    typed.forEach(function(tok, li) {
+      var gi = globalIdx + li;
+      if (tok.type === 'comma') { lineHtml += '<span class="tok t-comma">,</span>'; return; }
+      if (tok.type === 'paren') { lineHtml += '<span class="tok t-paren">'+esc(tok.text)+'</span>'; return; }
+      var cls = tok.type === 'macro' ? 't-macro' : tok.type === 'es-field' ? 't-es-field' : tok.type === 'risk' ? 't-risk' : 't-'+tok.type;
+      lineHtml += '<span class="tok '+cls+'" id="tok'+gi+'" onclick="hl('+gi+')" title="'+tok.type+'">'+esc(tok.text)+'</span> ';
+    });
+    lineHtml += '</div>';
+
+    var cardsHtml = '<div class="cards">';
+    var cardNum = 0;
+    typed.forEach(function(tok, li) {
+      if (tok.type === 'comma' || tok.type === 'paren') return;
+      var gi = globalIdx + li;
+      cardNum++;
+      var cls = tok.type === 'macro' ? 't-macro' : tok.type === 'es-field' ? 't-es-field' : tok.type === 'risk' ? 't-risk' : 't-'+tok.type;
+      cardsHtml += '<div class="card" id="card'+gi+'" onclick="hl('+gi+')">';
+      cardsHtml += '<div class="card-n">'+String(cardNum).padStart(2,'0')+'</div>';
+      cardsHtml += '<div class="card-body">';
+      cardsHtml += '<div class="card-tok"><code class="'+cls+'">'+esc(tok.text)+'</code><span class="badge">'+tok.type+'</span></div>';
+      cardsHtml += '<div class="card-desc">'+tok.desc+'</div>';
+      if (tok.note) cardsHtml += '<div class="card-note">'+tok.note+'</div>';
+      // Macro expansion input
+      if (tok.isMacro) {
+        cardsHtml += '<div class="card-expand"><span class="expand-label">Paste macro expansion (optional)</span><input class="expand-input" type="text" placeholder="e.g.: index=notable earliest=-24h" oninput="updateMacroExpand(this, '+gi+', \'' + tok.text.replace(/'/g,"\\'") + '\')" /><div class="expand-note">Paste what `'+esc(tok.macroName)+'` expands to from your environment. It will be shown inline above.</div></div>';
+      }
+      cardsHtml += '</div></div>';
+    });
+    cardsHtml += '</div>';
+
+    stageEl.innerHTML = headerHtml + lineHtml + cardsHtml;
+    out.appendChild(stageEl);
+
+    globalIdx += typed.length;
+
+    if (si < stages.length - 1) {
+      var div = document.createElement('div');
+      div.className = 'pipe-divider';
+      div.textContent = 'PIPE';
+      out.appendChild(div);
+    }
+  });
+
+  out.classList.add('visible');
+}
+
+function updateMacroExpand(input, gi, macroText) {
+  var val = input.value.trim();
+  var tokEl = document.getElementById('tok'+gi);
+  if (!tokEl) return;
+  if (val) {
+    tokEl.title = 'Expands to: ' + val;
+    tokEl.style.textDecoration = 'underline dotted';
+    // Show inline expansion note below token
+    var existing = document.getElementById('expand-inline-'+gi);
+    if (!existing) {
+      var span = document.createElement('span');
+      span.id = 'expand-inline-'+gi;
+      span.style.cssText = 'font-size:10px;color:#e879f9;display:block;margin-top:2px;';
+      tokEl.parentNode.insertBefore(span, tokEl.nextSibling);
+    }
+    document.getElementById('expand-inline-'+gi).textContent = '→ ' + val;
+  } else {
+    tokEl.style.textDecoration = '';
+    tokEl.title = '';
+    var existing = document.getElementById('expand-inline-'+gi);
+    if (existing) existing.remove();
+  }
+}
+
+var activeG = null;
+function hl(gi) {
+  if (activeG !== null) {
+    var pt = document.getElementById('tok'+activeG);
+    var pc = document.getElementById('card'+activeG);
+    if(pt) pt.classList.remove('active');
+    if(pc) pc.classList.remove('hl');
+  }
+  if (activeG === gi) { activeG = null; return; }
+  activeG = gi;
+  var tok = document.getElementById('tok'+gi);
+  var card = document.getElementById('card'+gi);
+  if(tok) tok.classList.add('active');
+  if(card){ card.classList.add('hl'); card.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+
+document.getElementById('spl').addEventListener('keydown', function(e){
+  if (e.key==='Enter' && (e.ctrlKey||e.metaKey)) run();
+});
+</script>
+</body>
+</html>
