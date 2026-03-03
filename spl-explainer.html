@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,6 +144,21 @@ footer{text-align:center;padding:40px 0 28px;color:var(--text-muted);font-size:1
 .expand-input{width:100%;background:#0a0c10;border:1px solid var(--border-light);border-radius:6px;padding:7px 10px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;}
 .expand-input:focus{border-color:#e879f9;}
 .expand-note{font-size:11px;color:var(--text-muted);margin-top:5px;}
+
+/* ── Macro inline expansion breakdown ── */
+.macro-expansion{margin-top:12px;border-top:1px solid rgba(232,121,249,0.2);padding-top:12px;}
+.macro-expansion-label{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#e879f9;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.macro-expansion-label::after{content:'';flex:1;height:1px;background:rgba(232,121,249,0.2);}
+.macro-token-line{background:rgba(232,121,249,0.04);border:1px solid rgba(232,121,249,0.15);border-radius:8px;padding:10px 14px;font-size:12px;line-height:2.1;margin-bottom:10px;overflow-x:auto;word-break:break-all;}
+.macro-cards{display:flex;flex-direction:column;gap:6px;}
+.macro-card{background:rgba(232,121,249,0.03);border:1px solid rgba(232,121,249,0.12);border-left:2px solid rgba(232,121,249,0.4);border-radius:7px;padding:10px 14px;display:flex;gap:12px;}
+.macro-card-n{font-size:10px;color:var(--text-muted);min-width:20px;padding-top:1px;}
+.macro-card-body{flex:1;}
+.macro-card-tok{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap;}
+.macro-card-tok code{font-family:var(--mono);font-size:11px;font-weight:600;}
+.macro-card-desc{font-size:11px;color:var(--text-dim);line-height:1.55;}
+.macro-card-note{font-size:10px;color:var(--text-muted);margin-top:3px;border-left:2px solid var(--border-light);padding-left:7px;}
+.macro-empty{font-size:11px;color:var(--text-muted);font-style:italic;padding:4px 0;}
 
 /* ── NEW: ES field highlight ── */
 .t-es-field{color:#34d399;background:rgba(52,211,153,0.1);}
@@ -1016,7 +1032,7 @@ function run() {
       if (tok.note) cardsHtml += '<div class="card-note">'+tok.note+'</div>';
       // Macro expansion input
       if (tok.isMacro) {
-        cardsHtml += '<div class="card-expand"><span class="expand-label">Paste macro expansion (optional)</span><input class="expand-input" type="text" placeholder="e.g.: index=notable earliest=-24h" oninput="updateMacroExpand(this, '+gi+', \'' + tok.text.replace(/'/g,"\\'") + '\')" /><div class="expand-note">Paste what `'+esc(tok.macroName)+'` expands to from your environment. It will be shown inline above.</div></div>';
+        cardsHtml += '<div class="card-expand"><span class="expand-label">Paste macro expansion</span><input class="expand-input macro-expand-input" type="text" data-gi="'+gi+'" placeholder="e.g.: index=notable earliest=-24h" /><div class="expand-note">Paste what <code>'+esc(tok.macroName)+'</code> expands to — it will be fully parsed and explained below.</div></div><div id="macro-breakdown-'+gi+'"></div>';
       }
       cardsHtml += '</div></div>';
     });
@@ -1038,28 +1054,78 @@ function run() {
   out.classList.add('visible');
 }
 
-function updateMacroExpand(input, gi, macroText) {
+function updateMacroExpand(input, gi) {
   var val = input.value.trim();
   var tokEl = document.getElementById('tok'+gi);
-  if (!tokEl) return;
-  if (val) {
-    tokEl.title = 'Expands to: ' + val;
-    tokEl.style.textDecoration = 'underline dotted';
-    // Show inline expansion note below token
-    var existing = document.getElementById('expand-inline-'+gi);
-    if (!existing) {
-      var span = document.createElement('span');
-      span.id = 'expand-inline-'+gi;
-      span.style.cssText = 'font-size:10px;color:#e879f9;display:block;margin-top:2px;';
-      tokEl.parentNode.insertBefore(span, tokEl.nextSibling);
-    }
-    document.getElementById('expand-inline-'+gi).textContent = '→ ' + val;
-  } else {
+  var container = document.getElementById('macro-breakdown-'+gi);
+  if (!tokEl || !container) return;
+
+  if (!val) {
+    // Clear everything
     tokEl.style.textDecoration = '';
     tokEl.title = '';
-    var existing = document.getElementById('expand-inline-'+gi);
-    if (existing) existing.remove();
+    container.innerHTML = '';
+    return;
   }
+
+  // Mark token as expanded
+  tokEl.style.textDecoration = 'underline dotted';
+  tokEl.title = 'Expands to: ' + val;
+
+  // Parse and classify the expansion
+  var rawToks = lex(val);
+  var stages = splitPipes(rawToks);
+  var allTyped = [];
+  stages.forEach(function(st) {
+    var typed = st.map(function(t, i){ return classify(t, i>0?st[i-1]:null, st); }).filter(Boolean);
+    allTyped.push({tokens: typed, isPipe: false});
+    allTyped.push({tokens: [], isPipe: true}); // pipe placeholder between stages
+  });
+  // Remove trailing pipe placeholder
+  if (allTyped.length && allTyped[allTyped.length-1].isPipe) allTyped.pop();
+
+  // Build token line
+  var tokenLineHtml = '<div class="macro-token-line">';
+  var flatTyped = [];
+  allTyped.forEach(function(group, gi2) {
+    if (group.isPipe) {
+      tokenLineHtml += '<span class="tok t-pipe">|</span> ';
+      return;
+    }
+    group.tokens.forEach(function(tok, li) {
+      var idx = flatTyped.length;
+      flatTyped.push(tok);
+      if (tok.type === 'comma') { tokenLineHtml += '<span class="tok t-comma">,</span>'; return; }
+      if (tok.type === 'paren') { tokenLineHtml += '<span class="tok t-paren">'+esc(tok.text)+'</span>'; return; }
+      var cls = tok.type === 'macro' ? 't-macro' : tok.type === 'es-field' ? 't-es-field' : tok.type === 'risk' ? 't-risk' : 't-'+tok.type;
+      tokenLineHtml += '<span class="tok '+cls+'" title="'+tok.type+'">'+esc(tok.text)+'</span> ';
+    });
+  });
+  tokenLineHtml += '</div>';
+
+  // Build explanation cards
+  var cardsHtml = '<div class="macro-cards">';
+  var cardNum = 0;
+  flatTyped.forEach(function(tok) {
+    if (tok.type === 'comma' || tok.type === 'paren') return;
+    cardNum++;
+    var cls = tok.type === 'macro' ? 't-macro' : tok.type === 'es-field' ? 't-es-field' : tok.type === 'risk' ? 't-risk' : 't-'+tok.type;
+    cardsHtml += '<div class="macro-card">';
+    cardsHtml += '<div class="macro-card-n">'+String(cardNum).padStart(2,'0')+'</div>';
+    cardsHtml += '<div class="macro-card-body">';
+    cardsHtml += '<div class="macro-card-tok"><code class="'+cls+'">'+esc(tok.text)+'</code><span class="badge">'+tok.type+'</span></div>';
+    cardsHtml += '<div class="macro-card-desc">'+tok.desc+'</div>';
+    if (tok.note) cardsHtml += '<div class="macro-card-note">'+tok.note+'</div>';
+    cardsHtml += '</div></div>';
+  });
+  if (cardNum === 0) cardsHtml += '<div class="macro-empty">Nothing to explain — paste the full expansion above.</div>';
+  cardsHtml += '</div>';
+
+  container.innerHTML = '<div class="macro-expansion">'
+    + '<div class="macro-expansion-label">Expansion breakdown</div>'
+    + tokenLineHtml
+    + cardsHtml
+    + '</div>';
 }
 
 var activeG = null;
@@ -1080,6 +1146,14 @@ function hl(gi) {
 
 document.getElementById('spl').addEventListener('keydown', function(e){
   if (e.key==='Enter' && (e.ctrlKey||e.metaKey)) run();
+});
+
+// Event delegation for macro expansion inputs — avoids inline handler quoting issues
+document.getElementById('results').addEventListener('input', function(e){
+  if (e.target && e.target.classList.contains('macro-expand-input')) {
+    var gi = parseInt(e.target.getAttribute('data-gi'), 10);
+    updateMacroExpand(e.target, gi);
+  }
 });
 </script>
 </body>
