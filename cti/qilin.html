@@ -1,312 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Threat Actor Profile: Qilin (aka Agenda) - Aydan Hodges</title>
-    <meta name="description" content="Concise threat actor profile for Qilin (Agenda) with MITRE ATT&CK mapping, defensive recommendations, and references.">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="../assets/css/main.css">
-
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-KXF8Y0DEH6');
-    </script>
-
-    <!-- Favicon Icon -->
-    <link rel="icon" href="../assets/images/white-cross.png" type="image/png">
-
-    <style>
-        .threat-actor-content {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-        
-        .threat-actor-header {
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .threat-actor-header h1 {
-            color: var(--dark-color);
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .threat-actor-meta {
-            color: var(--secondary-color);
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .toc {
-            background: var(--light-color);
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        
-        .toc strong {
-            color: var(--dark-color);
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        .toc a {
-            color: var(--accent-color);
-            text-decoration: none;
-            margin-right: 1rem;
-            font-weight: 500;
-        }
-        
-        .toc a:hover {
-            text-decoration: underline;
-        }
-        
-        .section h2 {
-            color: var(--dark-color);
-            font-weight: 600;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 0.5rem;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .section h3 {
-            color: var(--dark-color);
-            font-weight: 600;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .tag {
-            display: inline-block;
-            background: rgba(0, 184, 148, 0.1);
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .ref-list {
-            list-style: decimal;
-            margin-left: 1.5rem;
-        }
-        
-        .ref-list li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .back-link {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .back-link:hover {
-            color: #00a884;
-            text-decoration: underline;
-        }
-        
-        .back-link i {
-            margin-right: 0.5rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Threat Actor Profile: Qilin (Agenda) — Aydan Hodges</title>
+  <meta name="description" content="Concise threat actor profile for Qilin (Agenda) with MITRE ATT&CK mapping, defensive recommendations, and references.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="icon" href="../assets/images/white-cross.png" type="image/png">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KXF8Y0DEH6');
+  </script>
 </head>
-
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
-                <img src="../assets/images/white-cross.png" alt="White Cross">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20"><i class="fab fa-github"></i> GitHub</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-    <!-- Content Section -->
-    <section class="py-5" style="margin-top: 80px;">
-        <div class="container">
-            <a href="index.html" class="back-link">
-                <i class="fas fa-arrow-left"></i> Back to CTI
-            </a>
-            
-            <div class="threat-actor-content">
-                <div class="threat-actor-header">
-                    <h1>Threat Actor Profile: Qilin <span style="font-size: 1.2rem; color: var(--secondary-color);">(aka Agenda)</span></h1>
-                    <div class="threat-actor-meta">
-                        <i class="fas fa-shield-alt me-2"></i>Ransomware-as-a-Service • Active since at least 2022 • Double extortion
-                    </div>
-                </div>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV" target="_blank" rel="noopener noreferrer" aria-label="Proverbs 16:3">
+        <img src="../assets/images/white-cross.png" alt="White cross">
+        <span>aydanhodges.com</span>
+      </a>
+      <nav class="header-links" aria-label="Site links">
+        <a href="../index.html">Home</a>
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg> GitHub</a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg> LinkedIn</a>
+      </nav>
+    </div>
+  </header>
 
-                <div class="toc">
-                    <strong>Contents:</strong>
-                    <a href="#overview">Overview</a>
-                    <a href="#attribution">Attribution & Origin</a>
-                    <a href="#characteristics">Notable Characteristics</a>
-                    <a href="#ttps">Tactics, Techniques & Procedures</a>
-                    <a href="#evasion">Evasion & Anti-Forensics</a>
-                    <a href="#defense">Defensive Recommendations</a>
-                    <a href="#references">References</a>
-                </div>
-
-                <div class="section" id="overview">
-                    <h2>Overview</h2>
-                    <p>Qilin, also known as <em>Agenda</em>, is a highly sophisticated ransomware-as-a-service (RaaS) operation active since at least 2022. The group distinguishes itself through extensive customization options for affiliates and a focus on double extortion. Qilin encrypts victim data and also exfiltrates files; if ransom is not paid, stolen data is leaked publicly.</p>
-                </div>
-
-                <div class="section" id="attribution">
-                    <h2>Attribution & Origin</h2>
-                    <ul>
-                        <li><strong>Aliases:</strong> Agenda</li>
-                        <li><strong>First Observed:</strong> 2022</li>
-                        <li><strong>Model:</strong> Ransomware-as-a-Service (RaaS)</li>
-                        <li><strong>Primary Target Countries:</strong> United States, United Kingdom, Germany, France, Canada, Japan</li>
-                        <li><strong>Primary Target Sectors:</strong> Critical infrastructure including healthcare, manufacturing, and education</li>
-                    </ul>
-                </div>
-
-                <div class="section" id="characteristics">
-                    <h2>Notable Characteristics</h2>
-                    <ul>
-                        <li><span class="tag">Double extortion</span> Encrypts and exfiltrates data; leaks if unpaid.</li>
-                        <li><span class="tag">Customization</span> Affiliates configure persistence, encryption, and execution behavior.</li>
-                        <li><span class="tag">Sophistication</span> Uses layered persistence, privilege escalation, and evasion.</li>
-                        <li><span class="tag">Initial Access</span> Frequently via credentials purchased/leaked on underground markets.</li>
-                    </ul>
-                </div>
-
-                <div class="section" id="ttps">
-                    <h2>Tactics, Techniques & Procedures (MITRE ATT&CK)</h2>
-
-                    <h3>Initial Access</h3>
-                    <ul>
-                        <li><strong>Valid Accounts (T1078):</strong> Access via leaked or purchased credentials.</li>
-                        <li><strong>Spearphishing Link (T1566.002):</strong> Malicious links/attachments in email.</li>
-                    </ul>
-
-                    <h3>Execution</h3>
-                    <ul>
-                        <li><strong>Command and Scripting Interpreter (T1059):</strong> Use of CLI and scripts to execute actions.</li>
-                    </ul>
-
-                    <h3>Persistence</h3>
-                    <ul>
-                        <li><strong>Scheduled Task (T1053.005):</strong> Maintains persistence through scheduled tasks.</li>
-                        <li><strong>Registry Run Keys / Startup Folder (T1547.001):</strong> Registry entries or startup executables.</li>
-                        <li><strong>Valid Accounts (T1078):</strong> Continued access using compromised accounts.</li>
-                    </ul>
-
-                    <h3>Privilege Escalation</h3>
-                    <ul>
-                        <li><strong>Process Injection (T1055):</strong> Code injection into legitimate processes.</li>
-                        <li><strong>Group Policy Modification (T1484.001):</strong> Weakens security settings via GPO changes.</li>
-                        <li><strong>Group Policy Preferences (T1552.006):</strong> Abuse of stored credentials.</li>
-                    </ul>
-
-                    <h3>Defense Evasion</h3>
-                    <ul>
-                        <li><strong>Disable Windows Event Logging (T1562.002):</strong> Hinders detection and analysis.</li>
-                        <li><strong>Safe Mode Boot (T1562.009):</strong> Reboots into Safe Mode before encryption.</li>
-                        <li><strong>Modify Registry (T1112):</strong> Adjusts registry settings to avoid detection.</li>
-                    </ul>
-
-                    <h3>Credential Access</h3>
-                    <ul>
-                        <li><strong>Credentials in Files (T1552.001):</strong> Searches for and extracts credentials from files.</li>
-                    </ul>
-
-                    <h3>Lateral Movement</h3>
-                    <ul>
-                        <li><strong>Replication Through Removable Media (T1091):</strong> Spreads via removable devices.</li>
-                    </ul>
-                </div>
-
-                <div class="section" id="evasion">
-                    <h2>Evasion & Anti-Forensics</h2>
-                    <ul>
-                        <li>Disables security systems prior to encryption.</li>
-                        <li>Disables Windows Event Logs to obscure activity.</li>
-                        <li>Boots into Safe Mode to neutralize protections before encrypting data.</li>
-                    </ul>
-                </div>
-
-                <div class="section" id="defense">
-                    <h2>Defensive Recommendations</h2>
-                    <ul>
-                        <li><strong>Multi-Factor Authentication (MFA):</strong> Enforce for all remote/privileged accounts.</li>
-                        <li><strong>Network Segmentation:</strong> Isolate critical systems and reduce blast radius.</li>
-                        <li><strong>Patch Management:</strong> Prioritize external-facing services.</li>
-                        <li><strong>Endpoint Detection & Response (EDR):</strong> Monitor for persistence & credential theft behavior.</li>
-                        <li><strong>User Awareness Training:</strong> Phishing/credential-theft education.</li>
-                        <li><strong>Backups:</strong> Maintain offline, tested backups.</li>
-                    </ul>
-                </div>
-
-                <div class="section" id="references">
-                    <h2>References</h2>
-                    <ol class="ref-list">
-                        <li>MITRE ATT&CK. <em>Qilin Ransomware – Techniques and Procedures.</em> <a href="https://attack.mitre.org/" target="_blank" rel="noopener">https://attack.mitre.org/</a></li>
-                        <li>Cyble. <em>Qilin Ransomware Group – Threat Actor Profile.</em> <a href="https://cyble.com/threat-actor-profiles/qilin-ransomware-group/" target="_blank" rel="noopener">https://cyble.com/threat-actor-profiles/qilin-ransomware-group/</a></li>
-                        <li>U.S. Department of Health & Human Services. <em>Qilin Threat Profile (TLP:CLEAR).</em> <a href="https://www.hhs.gov/sites/default/files/qilin-threat-profile-tlpclear.pdf" target="_blank" rel="noopener">https://www.hhs.gov/sites/default/files/qilin-threat-profile-tlpclear.pdf</a></li>
-                    </ol>
-                </div>
-            </div>
-        </div>
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">home</a><span class="sep">/</span><a href="index.html">cti</a><span class="sep">/</span>qilin</nav>
+        <p class="hero-kicker">index=cti threat_actor="Qilin"</p>
+        <h1>Qilin (aka Agenda)</h1>
+        <p class="hero-sub">Ransomware-as-a-Service · active since at least 2022 · double extortion</p>
+      </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
-        <div class="container text-center">
-            <div class="social-links mb-3">
-                <a href="https://github.com/arhodges20" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/aydan-hodges/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-            </div>
-            <p class="mb-0">© 2025 Aydan Hodges.</p>
+    <section>
+      <div class="container">
+        <div class="doc-layout">
+          <aside class="toc" aria-label="Table of contents">
+            <p class="toc-title">Contents</p>
+            <ol><li><a href="#overview">Overview</a></li><li><a href="#attribution">Attribution & Origin</a></li><li><a href="#characteristics">Notable Characteristics</a></li><li><a href="#ttps">Tactics, Techniques & Procedures</a></li><li><a href="#evasion">Evasion & Anti-Forensics</a></li><li><a href="#defense">Defensive Recommendations</a></li><li><a href="#references">References</a></li></ol>
+          </aside>
+          <article class="prose">
+<h2 id="overview">Overview</h2>
+<p>Qilin, also known as <em>Agenda</em>, is a highly sophisticated ransomware-as-a-service (RaaS) operation active since at least 2022. The group distinguishes itself through extensive customization options for affiliates and a focus on double extortion. Qilin encrypts victim data and also exfiltrates files; if ransom is not paid, stolen data is leaked publicly.</p>
+<h2 id="attribution">Attribution &amp; Origin</h2>
+<ul><li><strong>Aliases:</strong> Agenda</li><li><strong>First observed:</strong> 2022</li><li><strong>Model:</strong> Ransomware-as-a-Service (RaaS)</li><li><strong>Primary target countries:</strong> United States, United Kingdom, Germany, France, Canada, Japan</li><li><strong>Primary target sectors:</strong> Critical infrastructure including healthcare, manufacturing, and education</li></ul>
+<h2 id="characteristics">Notable Characteristics</h2>
+<div class="info-grid"><div class="info-card"><h3>Double extortion</h3><p>Encrypts and exfiltrates data; leaks if unpaid.</p></div><div class="info-card"><h3>Customization</h3><p>Affiliates configure persistence, encryption, and execution behavior.</p></div><div class="info-card"><h3>Sophistication</h3><p>Uses layered persistence, privilege escalation, and evasion.</p></div><div class="info-card"><h3>Initial access</h3><p>Frequently via credentials purchased or leaked on underground markets.</p></div></div>
+<h2 id="ttps">Tactics, Techniques &amp; Procedures (MITRE ATT&amp;CK)</h2>
+<h3>Initial Access</h3><ul><li><strong>Valid Accounts (T1078):</strong> Access via leaked or purchased credentials.</li><li><strong>Spearphishing Link (T1566.002):</strong> Malicious links/attachments in email.</li></ul><h3>Execution</h3><ul><li><strong>Command and Scripting Interpreter (T1059):</strong> Use of CLI and scripts to execute actions.</li></ul><h3>Persistence</h3><ul><li><strong>Scheduled Task (T1053.005):</strong> Maintains persistence through scheduled tasks.</li><li><strong>Registry Run Keys / Startup Folder (T1547.001):</strong> Registry entries or startup executables.</li><li><strong>Valid Accounts (T1078):</strong> Continued access using compromised accounts.</li></ul><h3>Privilege Escalation</h3><ul><li><strong>Process Injection (T1055):</strong> Code injection into legitimate processes.</li><li><strong>Group Policy Modification (T1484.001):</strong> Weakens security settings via GPO changes.</li><li><strong>Group Policy Preferences (T1552.006):</strong> Abuse of stored credentials.</li></ul><h3>Defense Evasion</h3><ul><li><strong>Disable Windows Event Logging (T1562.002):</strong> Hinders detection and analysis.</li><li><strong>Safe Mode Boot (T1562.009):</strong> Reboots into Safe Mode before encryption.</li><li><strong>Modify Registry (T1112):</strong> Adjusts registry settings to avoid detection.</li></ul><h3>Credential Access</h3><ul><li><strong>Credentials in Files (T1552.001):</strong> Searches for and extracts credentials from files.</li></ul><h3>Lateral Movement</h3><ul><li><strong>Replication Through Removable Media (T1091):</strong> Spreads via removable devices.</li></ul>
+<h2 id="evasion">Evasion &amp; Anti-Forensics</h2>
+<ul><li>Disables security systems prior to encryption.</li><li>Disables Windows Event Logs to obscure activity.</li><li>Boots into Safe Mode to neutralize protections before encrypting data.</li></ul>
+<h2 id="defense">Defensive Recommendations</h2>
+<ul><li><strong>Multi-Factor Authentication (MFA):</strong> enforce for all remote and privileged accounts.</li><li><strong>Network segmentation:</strong> isolate critical systems and reduce blast radius.</li><li><strong>Patch management:</strong> prioritize external-facing services.</li><li><strong>Endpoint Detection &amp; Response (EDR):</strong> monitor for persistence and credential-theft behavior.</li><li><strong>User awareness training:</strong> phishing and credential-theft education.</li><li><strong>Backups:</strong> maintain offline, tested backups.</li></ul>
+<h2 id="references">References</h2>
+<ol><li>MITRE ATT&amp;CK. <em>Qilin Ransomware — Techniques and Procedures.</em> <a href="https://attack.mitre.org/" target="_blank" rel="noopener noreferrer">attack.mitre.org</a></li><li>Cyble. <em>Qilin Ransomware Group — Threat Actor Profile.</em> <a href="https://cyble.com/threat-actor-profiles/qilin-ransomware-group/" target="_blank" rel="noopener noreferrer">cyble.com</a></li><li>U.S. Department of Health &amp; Human Services. <em>Qilin Threat Profile (TLP:CLEAR).</em> <a href="https://www.hhs.gov/sites/default/files/qilin-threat-profile-tlpclear.pdf" target="_blank" rel="noopener noreferrer">hhs.gov</a></li></ol>
+
+            <p style="margin-top:2.5rem;"><a class="btn btn-ghost" href="index.html">← Back to CTI</a></p>
+          </article>
         </div>
-    </footer>
+      </div>
+    </section>
+  </main>
 
-    <!-- Bootstrap & jQuery Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/js/main.js"></script>
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-note">© 2026 Aydan Hodges</p>
+      <div class="footer-links">
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
+      </div>
+    </div>
+  </footer>
+  <script src="../assets/js/site.js"></script>
 </body>
-
 </html>
