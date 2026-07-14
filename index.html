@@ -1,200 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Aydan Hodges - Portfolio & Documentation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aydan Hodges — Senior Security Consultant</title>
+  <meta name="description" content="Portfolio and documentation of Aydan Hodges — Senior Security Consultant focused on detection engineering, threat intelligence, and security automation.">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="assets/css/main.css">
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/css/home.css">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-KXF8Y0DEH6');
-    </script>
+  <!-- Favicon -->
+  <link rel="icon" href="assets/images/white-cross.png" type="image/png">
 
-    <!-- Favicon Icon -->
-    <link rel="icon" href="assets/images/white-cross.png" type="image/png">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KXF8Y0DEH6');
+  </script>
 </head>
-
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV">
-                <img src="assets/images/white-cross.png" alt="White Cross">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="https://github.com/arhodges20"><i class="fab fa-github"></i> GitHub</a></li>
-                    <li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/aydan-hodges/"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-    <!-- Hero Section -->
-    <header class="masthead d-flex align-items-center justify-content-center" style="min-height: 70vh;">
-        <div class="container d-flex flex-column align-items-center justify-content-center h-100">
-            <div class="text-center w-100">
-                <h1>Aydan Hodges</h1>
-                <p>IT/Cyber Portfolio & Documentation</p>
-                <div class="divider"></div>
-                <p class="lead mb-2" style="font-size:1.1rem; color:rgba(255,255,255,0.85); font-weight:500;">SOC Analyst - CySA+ & Sec+</p>
-                <div class="badges-row mb-3">
-                    <a href="https://www.sans.org/blog/how-to-become-a-soc-analyst/" target="_blank" rel="noopener noreferrer" style="text-decoration: none;" class="badge-link">
-                        <span class="badge bg-primary">SOC Analyst</span>
-                    </a>
-                    <a href="https://www.credly.com/badges/492bc57b-e7d7-46e4-9d20-b457d13b5054/public_url" target="_blank" rel="noopener noreferrer" style="text-decoration: none;" class="badge-link">
-                        <span class="badge bg-info">CySA+</span>
-                    </a>
-                    <a href="https://www.credly.com/badges/b45ebfa8-6da8-4e4e-89c0-de2a52f91e61/public_url" target="_blank" rel="noopener noreferrer" style="text-decoration: none;" class="badge-link">
-                        <span class="badge" style="background-color: #e03a3e; color: #fff;">Sec+</span>
-                    </a>
-                </div>
-                <a href="https://github.com/arhodges20" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-github me-2"></i>View My Work
-                </a>
-            </div>
-        </div>
-    </header>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV" target="_blank" rel="noopener noreferrer" aria-label="Proverbs 16:3">
+        <img src="assets/images/white-cross.png" alt="White cross">
+        <span>aydanhodges.com</span>
+      </a>
+      <nav class="header-links" aria-label="Social links">
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+          LinkedIn
+        </a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Projects Section -->
-    <section id="projects" class="py-5 bg-light">
-        <div class="container">
-            <h2 class="section-title mx-auto text-center" style="display: table;">Projects</h2>
-            <div class="row g-4" style="align-items: stretch;">
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <span class="new-badge">New</span>
-                        <div class="card-body">
-                            <h3 class="card-title">Detection Engineering Notebook</h3>
-                            <p class="card-text mb-2">Threat-informed detection design and reasoning documentation.</p>
-                            <a href="detection-notebook.html" class="btn btn-primary">Learn More</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="card-body">
-                            <h3 class="card-title">Cyber Threat Intelligence</h3>
-                            <p class="card-text mb-2">Threat actor profiles and intelligence reports for research and learning.</p>
-                            <a href="cti/index.html" class="btn btn-primary">View CTI Reports</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="card-body">
-                            <h3 class="card-title">Homelab</h3>
-                            <p class="card-text">My home lab setup and infrastructure documentation.</p>
-                            <a href="homelab.html" class="btn btn-primary">Learn More</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="card-body">
-                            <h3 class="card-title">Terraform</h3>
-                            <p class="card-text">Documentation on my use of terraform within my homelab.</p>
-                            <a href="terraform.html" class="btn btn-primary">Learn More</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="card-body">
-                            <h3 class="card-title">ITT-221 Scripts</h3>
-                            <p class="card-text">Scripts to automate assignments completed in ITT-221.</p>
-                            <a href="https://github.com/arhodges20/ITT-221" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <div class="project-card">
-                        <div class="card-body">
-                            <h3 class="card-title">Panoptic</h3>
-                            <p class="card-text mb-2">A real-time system monitoring solution.</p>
-                            <a href="https://github.com/arhodges20/Panoptic" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <p class="hero-kicker">index=portfolio <span class="pipe">|</span> stats latest(role)</p>
+        <h1 id="hero-title">Aydan Hodges</h1>
+        <p class="hero-role"><strong>Senior Security Consultant</strong> — detection engineering, threat intelligence, and security automation.</p>
+        <div class="chip-row">
+          <a class="chip" href="detection-notebook.html">Detection Engineering</a>
+          <a class="chip" href="https://www.credly.com/badges/492bc57b-e7d7-46e4-9d20-b457d13b5054/public_url" target="_blank" rel="noopener noreferrer">CompTIA CySA+</a>
+          <a class="chip" href="https://www.credly.com/badges/b45ebfa8-6da8-4e4e-89c0-de2a52f91e61/public_url" target="_blank" rel="noopener noreferrer">CompTIA Security+</a>
         </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="detection-notebook.html">Read the Detection Notebook</a>
+          <a class="btn btn-ghost" href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
     </section>
 
-    <!-- Cheat Sheets Section -->
-    <section id="cheat-sheets" class="py-5">
-        <div class="container">
-            <h2 class="section-title mx-auto text-center" style="display: table;">Cheat Sheets</h2>
-            <div class="row justify-content-center g-4">
-                <!-- SPL Cheat Sheet Tile -->
-                <div class="col-md-4">
-                    <div class="card project-card shadow-sm border-0 h-100">
-                        <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-                            <h4 class="mb-3" style="color: var(--dark-color); font-weight: 600;">SPL Cheat Sheet</h4>
-                            <p class="mb-2" style="color: var(--secondary-color);">Quick reference for Splunk Search Processing Language (SPL).</p>
-                            <a href="spl.html" class="btn btn-primary btn-lg mt-auto w-100" style="font-family: 'Space Grotesk', sans-serif; font-weight: 500;">View SPL Resources</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- PowerShell Coming Soon Tile -->
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 h-100 bg-light">
-                        <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-                            <h4 class="mb-3">PowerShell</h4>
-                            <span class="badge bg-primary mb-2">Coming Soon</span>
-                            <p class="text-muted">My most-used PowerShell scripts and commands will be available here soon.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- CrowdStrike Coming Soon Tile -->
-                <div class="col-md-4">
-                    <div class="card shadow-sm border-0 h-100 bg-light">
-                        <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
-                            <h4 class="mb-3">CrowdStrike</h4>
-                            <span class="badge bg-dark mb-2">Coming Soon</span>
-                            <p class="text-muted">Quick reference for CrowdStrike queries and scripts will be available here soon.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Projects -->
+    <section id="projects" aria-labelledby="projects-title">
+      <div class="container">
+        <p class="section-eyebrow">index=projects <span class="pipe">|</span> sort - priority</p>
+        <h2 class="section-title" id="projects-title">Projects</h2>
+        <div class="grid">
+          <article class="card featured">
+            <p class="card-tag">Featured</p>
+            <h3>Detection Engineering Notebook</h3>
+            <p>Threat-informed detection design — how detections are scoped, built, and tuned, with the reasoning documented alongside the logic.</p>
+            <a class="card-link" href="detection-notebook.html">Open the notebook</a>
+          </article>
+          <article class="card">
+            <p class="card-tag">Intelligence</p>
+            <h3>Cyber Threat Intelligence</h3>
+            <p>Threat actor profiles and intelligence reports written for research and learning.</p>
+            <a class="card-link" href="cti/index.html">View CTI reports</a>
+          </article>
+          <article class="card">
+            <p class="card-tag">Infrastructure</p>
+            <h3>Homelab</h3>
+            <p>Home lab architecture and infrastructure documentation — virtualization, segmentation, and services.</p>
+            <a class="card-link" href="homelab.html">Explore the lab</a>
+          </article>
+          <article class="card">
+            <p class="card-tag">Automation</p>
+            <h3>Terraform</h3>
+            <p>Infrastructure-as-code for the homelab: how the environment is defined, versioned, and rebuilt.</p>
+            <a class="card-link" href="terraform.html">Read the write-up</a>
+          </article>
+          <article class="card">
+            <p class="card-tag">Tooling</p>
+            <h3>Panoptic</h3>
+            <p>A real-time system monitoring solution.</p>
+            <a class="card-link" href="https://github.com/arhodges20/Panoptic" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          </article>
+          <article class="card">
+            <p class="card-tag">Scripting</p>
+            <h3>ITT-221 Scripts</h3>
+            <p>Automation scripts for Windows Server administration coursework.</p>
+            <a class="card-link" href="https://github.com/arhodges20/ITT-221" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          </article>
         </div>
+      </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
-        <div class="container text-center">
-            <div class="social-links mb-3">
-                <a href="https://github.com/arhodges20" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/aydan-hodges/" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-            </div>
-            <p class="mb-0">© 2025 Aydan Hodges.</p>
+    <!-- References / cheat sheets -->
+    <section id="cheat-sheets" aria-labelledby="refs-title">
+      <div class="container">
+        <p class="section-eyebrow">index=references <span class="pipe">|</span> where status="live" OR status="soon"</p>
+        <h2 class="section-title" id="refs-title">Quick References</h2>
+        <div class="ref-list">
+          <a class="ref-row" href="spl.html">
+            <span class="ref-name">SPL Cheat Sheet</span>
+            <span class="ref-desc">Quick reference for Splunk Search Processing Language.</span>
+            <span class="ref-status live">● live</span>
+          </a>
+          <div class="ref-row disabled">
+            <span class="ref-name">PowerShell</span>
+            <span class="ref-desc">Most-used PowerShell scripts and commands.</span>
+            <span class="ref-status soon">○ in progress</span>
+          </div>
+          <div class="ref-row disabled">
+            <span class="ref-name">CrowdStrike</span>
+            <span class="ref-desc">Quick reference for CrowdStrike queries and scripts.</span>
+            <span class="ref-status soon">○ in progress</span>
+          </div>
         </div>
-    </footer>
+      </div>
+    </section>
+  </main>
 
-    <!-- Bootstrap & jQuery Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/main.js"></script>
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-note">© 2026 Aydan Hodges</p>
+      <div class="footer-links">
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
 </body>
-
 </html>
