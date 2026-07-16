@@ -252,34 +252,47 @@ section { padding: 4.5rem 0; }
 .card-tag {
   font-family: var(--font-mono);
   font-size: 0.72rem;
+  line-height: 1;
   color: var(--accent);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.9rem;
 }
 
 .card h3 {
   font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 600;
-  margin: 0 0 0.5rem;
+  line-height: 1.35;
+  text-wrap: balance;
+  margin: 0 0 0.55rem;
 }
 
 .card p {
   color: var(--muted);
   font-size: 0.95rem;
-  margin: 0 0 1.25rem;
-  flex-grow: 1;
+  line-height: 1.6;
+  margin: 0;
 }
+
+.card .tag-row { margin: 0.9rem 0 0; }
 
 .card-link {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   color: var(--accent);
   text-decoration: none;
+  margin-top: auto;
+  padding-top: 1.2rem;
 }
 .card-link::after { content: " →"; }
 .card-link:hover { text-decoration: underline; }
+
+/* Reserve two lines of title space so descriptions and links
+   align across a row regardless of title length */
+@media (min-width: 641px) {
+  .card h3 { min-height: 2.7em; }
+}
 
 /* ---------- References list ---------- */
 
