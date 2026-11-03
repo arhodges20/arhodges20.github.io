@@ -64,6 +64,7 @@
       transition: border-color 0.15s ease, background 0.15s ease;
     }
     .github-link:hover { border-color: var(--accent); background: var(--accent-dim); }
+    .github-link + .github-link { margin-top: -0.6rem; }
 
     .notebook-nav { list-style: none; padding: 0; margin: 0; }
     .notebook-nav-item { margin-bottom: 0.15rem; }
@@ -242,6 +243,10 @@
             <a href="https://github.com/arhodges20/detection-notebook" class="github-link" target="_blank" rel="noopener noreferrer">
               <i class="fab fa-github"></i>
               View Source on GitHub
+            </a>
+            <a href="rules/index.html" class="github-link">
+              <i class="fas fa-shield-halved"></i>
+              Browse Detection Rules
             </a>
             <ul class="notebook-nav" id="notebookNav"></ul>
           </div>
