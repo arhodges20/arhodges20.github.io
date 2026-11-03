@@ -56,12 +56,12 @@
         <h1 id="hero-title">Aydan Hodges</h1>
         <p class="hero-role"><strong>Senior Security Consultant</strong> — detection engineering, threat intelligence, and security automation.</p>
         <div class="chip-row">
-          <a class="chip" href="detection-notebook.html">Detection Engineering</a>
+          <a class="chip" href="rules/index.html">Detection Engineering</a>
           <a class="chip" href="https://www.credly.com/badges/492bc57b-e7d7-46e4-9d20-b457d13b5054/public_url" target="_blank" rel="noopener noreferrer">CompTIA CySA+</a>
           <a class="chip" href="https://www.credly.com/badges/b45ebfa8-6da8-4e4e-89c0-de2a52f91e61/public_url" target="_blank" rel="noopener noreferrer">CompTIA Security+</a>
         </div>
         <div class="cta-row">
-          <a class="btn btn-primary" href="detection-notebook.html">Read the Detection Notebook</a>
+          <a class="btn btn-primary" href="rules/index.html">Browse Detection Rules</a>
           <a class="btn btn-ghost" href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer">
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
             GitHub
@@ -77,10 +77,15 @@
         <h2 class="section-title" id="projects-title">Projects</h2>
         <div class="grid">
           <article class="card featured reveal">
-            <p class="card-tag">Featured</p>
-            <h3>Detection Engineering Notebook</h3>
-            <p>Threat-informed detection design — how detections are scoped, built, and tuned, with the reasoning documented alongside the logic.</p>
-            <a class="card-link" href="detection-notebook.html">Open the notebook</a>
+            <p class="card-tag">Featured · Detection</p>
+            <h3>Detection Rules</h3>
+            <p>Elastic Security rules built and validated in my homelab — searchable, mapped to MITRE ATT&amp;CK, with triage guides and one-click Kibana export.</p>
+            <div class="tag-row">
+              <span class="tag">Elastic Security</span>
+              <span class="tag">MITRE ATT&amp;CK</span>
+              <span class="tag">KQL</span>
+            </div>
+            <a class="card-link" href="rules/index.html">Browse the rules</a>
           </article>
           <article class="card reveal">
             <p class="card-tag">Intelligence</p>
@@ -125,6 +130,11 @@
           <a class="ref-row" href="spl.html">
             <span class="ref-name">SPL Cheat Sheet</span>
             <span class="ref-desc">Quick reference for Splunk Search Processing Language.</span>
+            <span class="ref-status live">● live</span>
+          </a>
+          <a class="ref-row" href="detection-notebook.html">
+            <span class="ref-name">Detection Notebook</span>
+            <span class="ref-desc">Notes on how detections are scoped, built, and tuned.</span>
             <span class="ref-status live">● live</span>
           </a>
           <div class="ref-row disabled">
