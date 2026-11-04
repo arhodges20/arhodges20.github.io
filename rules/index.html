@@ -39,7 +39,7 @@
     .rules-app .bar input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
     .rules-app .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--faint); }
 
-    .rules-app .list { display: grid; gap: 1.25rem; }
+    .rules-app .list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
     .rules-app .rule {
       background: var(--surface);
       border: 1px solid var(--line);
@@ -201,7 +201,7 @@ function card(r,i){
   const tactics=[...new Set((r.threat||[]).map(t=>t.tactic?.name).filter(Boolean))];
   return `<article class="rule">
     <div class="top"><h2>${esc(r.name)}</h2><span class="sev" style="color:${sevColor[r.severity]||"var(--muted)"}">${esc(r.severity)}</span></div>
-    <div class="chips">${attack(r)}${tactics.map(t=>`<span class="chip plain">${esc(t)}</span>`).join("")}<span class="chip plain">${esc(type(r))} · ${esc(lang(r))}</span>${(r.index||[]).map(x=>`<span class="chip plain">${esc(x)}</span>`).join("")}</div>
+    <div class="chips">${attack(r)}${tactics.map(t=>`<span class="chip plain">${esc(t)}</span>`).join("")}<span class="chip plain">${esc(type(r)===lang(r)?type(r):`${type(r)} · ${lang(r)}`)}</span>${(r.index||[]).map(x=>`<span class="chip plain">${esc(x)}</span>`).join("")}</div>
     <p class="desc">${esc(r.description)}</p>
     <div class="qhead"><span class="lbl">Query</span><button data-copy="${i}">Copy</button></div>
     <pre><code>${esc(dedent(r.query))}</code></pre>
