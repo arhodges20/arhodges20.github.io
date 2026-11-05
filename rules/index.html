@@ -39,27 +39,52 @@
     .rules-app .bar input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
     .rules-app .count { font-family: var(--font-mono); font-size: 0.8rem; color: var(--faint); }
 
-    .rules-app .list { display: grid; gap: 1.25rem; }
+    .rules-app .list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+    /* Each rule is a <details>: the summary row (title + severity) is always visible,
+       .rule-body holds the full rule and opens on click */
     .rules-app .rule {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      padding: 1.5rem;
       font-size: 0.95rem;
+      transition: border-color 0.15s ease;
     }
-    .rules-app .top { display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline; flex-wrap: wrap; }
+    .rules-app .rule:hover, .rules-app .rule[open] { border-color: rgba(229, 164, 75, 0.45); }
+    .rules-app .top {
+      display: flex; gap: 0.85rem; align-items: center;
+      padding: 1.1rem 1.5rem; cursor: pointer; list-style: none;
+      border-radius: var(--radius);
+    }
+    .rules-app .top::-webkit-details-marker { display: none; }
+    .rules-app .top:focus-visible { outline-offset: -2px; }
+    .rules-app .chev {
+      flex: none; width: 0.5rem; height: 0.5rem;
+      border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+      transform: rotate(-45deg); transition: transform 0.15s ease;
+    }
+    .rules-app .rule[open] .chev { transform: rotate(45deg); }
     .rules-app .rule h2 {
+      flex: 1; min-width: 0;
       font-family: var(--font-display); font-size: 1.2rem; font-weight: 600;
       line-height: 1.35; margin: 0; text-wrap: balance;
+      transition: color 0.15s ease;
+    }
+    .rules-app .top:hover h2 { color: var(--accent); }
+    .rules-app .rule-body { padding: 0 1.5rem 1.5rem; }
+    @media (max-width: 640px) {
+      .rules-app .top { padding: 1rem 1.1rem; gap: 0.7rem; }
+      .rules-app .rule h2 { font-size: 1.05rem; }
+      .rules-app .rule-body { padding: 0 1.1rem 1.25rem; }
     }
     .rules-app .sev {
+      flex: none;
       font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.08em;
       padding: 0.15rem 0.6rem; border-radius: 999px; border: 1px solid currentColor;
     }
 
     /* ATT&CK chips reuse the site's .tag look; .chip.plain is the neutral variant */
-    .rules-app .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0 1rem; }
+    .rules-app .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1rem; }
     .rules-app .chip {
       font-family: var(--font-mono); font-size: 0.72rem;
       color: var(--accent); background: var(--accent-dim);
@@ -93,10 +118,10 @@
       border-radius: 4px; padding: 0.1em 0.35em;
     }
 
-    .rules-app details { margin-top: 1.1rem; border-top: 1px solid var(--line); padding-top: 0.9rem; }
-    .rules-app summary { cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: var(--ink); }
-    .rules-app summary::marker { color: var(--accent); }
-    .rules-app summary:hover { color: var(--accent); }
+    .rules-app .rule-body details { margin-top: 1.1rem; border-top: 1px solid var(--line); padding-top: 0.9rem; }
+    .rules-app .rule-body summary { cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; color: var(--ink); }
+    .rules-app .rule-body summary::marker { color: var(--accent); }
+    .rules-app .rule-body summary:hover { color: var(--accent); }
     .rules-app .note { font-size: 0.93rem; color: var(--muted); margin-top: 0.5rem; }
     .rules-app .note h4 { font-family: var(--font-display); font-size: 1rem; font-weight: 600; color: var(--accent); margin: 1rem 0 0.4rem; }
     .rules-app .note p { margin: 0 0 0.6rem; }
@@ -197,18 +222,26 @@ function attack(r){
 }
 
 let rules=[];
+const openRules=new Set();
+document.addEventListener("toggle", e=>{
+  const el=e.target;
+  if (!el.matches || !el.matches("details.rule")) return;
+  const i=+el.dataset.rule; el.open ? openRules.add(i) : openRules.delete(i);
+}, true);
 function card(r,i){
   const tactics=[...new Set((r.threat||[]).map(t=>t.tactic?.name).filter(Boolean))];
-  return `<article class="rule">
-    <div class="top"><h2>${esc(r.name)}</h2><span class="sev" style="color:${sevColor[r.severity]||"var(--muted)"}">${esc(r.severity)}</span></div>
-    <div class="chips">${attack(r)}${tactics.map(t=>`<span class="chip plain">${esc(t)}</span>`).join("")}<span class="chip plain">${esc(type(r))} · ${esc(lang(r))}</span>${(r.index||[]).map(x=>`<span class="chip plain">${esc(x)}</span>`).join("")}</div>
+  return `<details class="rule" data-rule="${i}"${openRules.has(i)?" open":""}>
+    <summary class="top"><span class="chev" aria-hidden="true"></span><h2>${esc(r.name)}</h2><span class="sev" style="color:${sevColor[r.severity]||"var(--muted)"}">${esc(r.severity)}</span></summary>
+    <div class="rule-body">
+    <div class="chips">${attack(r)}${tactics.map(t=>`<span class="chip plain">${esc(t)}</span>`).join("")}<span class="chip plain">${esc(type(r)===lang(r)?type(r):`${type(r)} · ${lang(r)}`)}</span>${(r.index||[]).map(x=>`<span class="chip plain">${esc(x)}</span>`).join("")}</div>
     <p class="desc">${esc(r.description)}</p>
     <div class="qhead"><span class="lbl">Query</span><button data-copy="${i}">Copy</button></div>
     <pre><code>${esc(dedent(r.query))}</code></pre>
     ${r.note?`<details><summary>Triage guide</summary><div class="note">${md(r.note)}</div></details>`:""}
     ${(r.references||[]).length?`<div class="refs" style="margin-top:10px">${r.references.map(u=>`<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u.replace(/^https?:\/\//,""))}</a>`).join("")}</div>`:""}
     <div class="actions"><button data-dl="${i}">Download for Kibana import</button></div>
-  </article>`;
+    </div>
+  </details>`;
 }
 
 function render(){
