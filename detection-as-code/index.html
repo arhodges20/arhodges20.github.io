@@ -47,7 +47,7 @@
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" class="project-page">
     <section class="page-hero">
       <div class="container">
         <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">home</a><span class="sep">/</span>detection-as-code</nav>
@@ -103,43 +103,92 @@
         <p class="section-eyebrow">index=pipeline <span class="pipe">|</span> transaction rule_id startswith="write" endswith="promote"</p>
         <h2 class="section-title" id="workflow-title">The workflow</h2>
 
-        <figure class="flow" aria-labelledby="flow-caption">
-          <ol class="flow-steps">
-            <li class="flow-step">
-              <span class="flow-num">01</span>
-              <span class="flow-name">Write the rule</span>
-              <span class="flow-detail">Rule file, test data, ADS doc</span>
-            </li>
-            <li class="flow-step gate">
-              <span class="flow-num">02</span>
-              <span class="flow-name">CI checks</span>
-              <span class="flow-detail">Validation, standards, replay</span>
-              <span class="flow-gate">gate: all must pass</span>
-            </li>
-            <li class="flow-step">
-              <span class="flow-num">03</span>
-              <span class="flow-name">Review &amp; merge</span>
-              <span class="flow-detail">PR checklist, protected main</span>
-            </li>
-            <li class="flow-step">
-              <span class="flow-num">04</span>
-              <span class="flow-name">Deploy to staging</span>
-              <span class="flow-detail">Separate Kibana space</span>
-            </li>
-            <li class="flow-step gate">
-              <span class="flow-num">05</span>
-              <span class="flow-name">Attack &amp; verify</span>
-              <span class="flow-detail">Atomic Red Team test</span>
-              <span class="flow-gate">gate: alert must fire</span>
-            </li>
-            <li class="flow-step">
-              <span class="flow-num">06</span>
-              <span class="flow-name">Promote</span>
-              <span class="flow-detail">Production, updated by rule ID</span>
-            </li>
-          </ol>
-          <p class="flow-loop"><span class="flow-num" aria-hidden="true">↺</span><strong>Nightly drift detection:</strong> compares Kibana with git and opens a GitHub issue for anything that differs.</p>
-          <figcaption id="flow-caption">Figure: the six stages a rule passes through, in order. Steps 2 and 5 are gates where the pipeline stops if the check fails.</figcaption>
+        <figure class="flowchart">
+          <svg class="fc-wide" viewBox="0 0 1040 304" role="img" aria-labelledby="fcw-title fcw-desc">
+            <title id="fcw-title">Detection-as-Code pipeline flowchart</title>
+            <desc id="fcw-desc">A rule is written on a branch, then a pull request runs three CI checks, then it is reviewed and squash merged, then deployed to staging. A decision follows: does the Atomic Red Team test raise the rule's alert? If no, the pipeline stops and production is unchanged. If yes, the rule is promoted to production. A nightly drift check compares production with git.</desc>
+            <defs>
+              <marker id="fcw-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head" d="M0,0 L10,5 L0,10 z"/></marker>
+              <marker id="fcw-arrow-yes" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head yes" d="M0,0 L10,5 L0,10 z"/></marker>
+            </defs>
+            <rect class="fc-box" x="0" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="70" y="116">Branch + rule</text>
+            <text class="fc-sub" x="70" y="134">rule · tests · ADS</text>
+            <path class="fc-edge" d="M140 120 H170" marker-end="url(#fcw-arrow)"/>
+            <rect class="fc-box" x="170" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="240" y="116">PR: 3 CI checks</text>
+            <text class="fc-sub" x="240" y="134">GitHub-hosted</text>
+            <path class="fc-edge" d="M310 120 H340" marker-end="url(#fcw-arrow)"/>
+            <rect class="fc-box" x="340" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="410" y="116">Review + merge</text>
+            <text class="fc-sub" x="410" y="134">squash merge</text>
+            <path class="fc-edge" d="M480 120 H510" marker-end="url(#fcw-arrow)"/>
+            <rect class="fc-box" x="510" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="580" y="116">Deploy to staging</text>
+            <text class="fc-sub" x="580" y="134">self-hosted runner</text>
+            <path class="fc-edge" d="M650 120 H680" marker-end="url(#fcw-arrow)"/>
+            <polygon class="fc-diamond" points="680,120 750,58 820,120 750,182"/>
+            <text class="fc-title" x="750" y="116">Atomic test</text>
+            <text class="fc-title" x="750" y="135">alerts?</text>
+            <path class="fc-edge" d="M820 120 H852"/>
+            <path class="fc-edge" d="M852 120 V60 H880" marker-end="url(#fcw-arrow)"/>
+            <text class="fc-label" x="860" y="99">no</text>
+            <path class="fc-edge yes" d="M852 120 V180 H880" marker-end="url(#fcw-arrow-yes)"/>
+            <text class="fc-label yes" x="860" y="153">yes</text>
+            <rect class="fc-box stop" x="880" y="30" width="160" height="60" rx="8"/>
+            <text class="fc-title" x="960" y="56">Stop</text>
+            <text class="fc-sub" x="960" y="74">production unchanged</text>
+            <rect class="fc-box accent" x="880" y="150" width="160" height="60" rx="8"/>
+            <text class="fc-title" x="960" y="176">Promote</text>
+            <text class="fc-sub" x="960" y="194">production, by rule ID</text>
+            <rect class="fc-box dashed" x="880" y="242" width="160" height="60" rx="8"/>
+            <text class="fc-title" x="960" y="268">Nightly drift check</text>
+            <text class="fc-sub" x="960" y="286">Kibana vs git</text>
+            <path class="fc-edge dashed" d="M960 242 V210" marker-end="url(#fcw-arrow)"/>
+          </svg>
+          <svg class="fc-tall" viewBox="0 0 340 692" role="img" aria-labelledby="fct-title fct-desc">
+            <title id="fct-title">Detection-as-Code pipeline flowchart</title>
+            <desc id="fct-desc">A rule is written on a branch, then a pull request runs three CI checks, then it is reviewed and squash merged, then deployed to staging. A decision follows: does the Atomic Red Team test raise the rule's alert? If no, the pipeline stops and production is unchanged. If yes, the rule is promoted to production. A nightly drift check compares production with git.</desc>
+            <defs>
+              <marker id="fct-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head" d="M0,0 L10,5 L0,10 z"/></marker>
+              <marker id="fct-arrow-yes" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head yes" d="M0,0 L10,5 L0,10 z"/></marker>
+            </defs>
+            <rect class="fc-box" x="60" y="0" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="24">Branch + rule</text>
+            <text class="fc-sub" x="170" y="42">rule · tests · ADS</text>
+            <path class="fc-edge" d="M170 56 V84" marker-end="url(#fct-arrow)"/>
+            <rect class="fc-box" x="60" y="84" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="108">PR: 3 CI checks</text>
+            <text class="fc-sub" x="170" y="126">GitHub-hosted</text>
+            <path class="fc-edge" d="M170 140 V168" marker-end="url(#fct-arrow)"/>
+            <rect class="fc-box" x="60" y="168" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="192">Review + merge</text>
+            <text class="fc-sub" x="170" y="210">squash merge</text>
+            <path class="fc-edge" d="M170 224 V252" marker-end="url(#fct-arrow)"/>
+            <rect class="fc-box" x="60" y="252" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="276">Deploy to staging</text>
+            <text class="fc-sub" x="170" y="294">self-hosted runner</text>
+            <path class="fc-edge" d="M170 308 V336" marker-end="url(#fct-arrow)"/>
+            <polygon class="fc-diamond" points="170,336 260,400 170,464 80,400"/>
+            <text class="fc-title" x="170" y="396">Atomic test</text>
+            <text class="fc-title" x="170" y="415">alerts?</text>
+            <path class="fc-edge" d="M170 464 V488"/>
+            <path class="fc-edge" d="M170 488 H85 V520" marker-end="url(#fct-arrow)"/>
+            <text class="fc-label" x="120" y="480">no</text>
+            <path class="fc-edge yes" d="M170 488 H255 V520" marker-end="url(#fct-arrow-yes)"/>
+            <text class="fc-label yes" x="200" y="480">yes</text>
+            <rect class="fc-box stop" x="10" y="520" width="150" height="60" rx="8"/>
+            <text class="fc-title" x="85" y="546">Stop</text>
+            <text class="fc-sub" x="85" y="564">production unchanged</text>
+            <rect class="fc-box accent" x="180" y="520" width="150" height="60" rx="8"/>
+            <text class="fc-title" x="255" y="546">Promote</text>
+            <text class="fc-sub" x="255" y="564">production, by rule ID</text>
+            <rect class="fc-box dashed" x="180" y="630" width="150" height="60" rx="8"/>
+            <text class="fc-title" x="255" y="656">Nightly drift check</text>
+            <text class="fc-sub" x="255" y="674">Kibana vs git</text>
+            <path class="fc-edge dashed" d="M255 630 V580" marker-end="url(#fct-arrow)"/>
+          </svg>
+          <figcaption>Figure: how a rule moves from a branch to production. If the Atomic Red Team test doesn't raise the rule's alert in staging, the pipeline stops and production stays unchanged.</figcaption>
         </figure>
 
         <div class="info-grid">
@@ -224,60 +273,6 @@
       </div>
     </section>
 
-    <!-- What it caught -->
-    <section aria-labelledby="caught-title">
-      <div class="container">
-        <p class="section-eyebrow">index=pipeline status=blocked <span class="pipe">|</span> stats count by cause</p>
-        <h2 class="section-title" id="caught-title">What it caught while I built it</h2>
-        <div class="grid">
-          <article class="card reveal">
-            <p class="card-tag">House standards</p>
-            <h3>6 of 7 imported rules failed my standards</h3>
-            <p>They were missing an ATT&amp;CK mapping or false-positive guidance. All six were fixed before anything shipped.</p>
-          </article>
-          <article class="card reveal">
-            <p class="card-tag">Staging gate</p>
-            <h3>1 deploy stopped at staging</h3>
-            <p>A scheduling error that Kibana would have rejected stopped the deploy at staging. Production never changed. I then added a CI build step, so that class of error now fails the pull request instead.</p>
-          </article>
-          <article class="card reveal">
-            <p class="card-tag">ES|QL</p>
-            <h3>3 ES|QL rules brought up to standard</h3>
-            <p>Instead of permanently bypassing the check, I brought them up to Elastic's alert-field (KEEP) standard.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Detection catalog -->
-    <section aria-labelledby="catalog-title">
-      <div class="container">
-        <p class="section-eyebrow">index=detections <span class="pipe">|</span> table name, tactic, type, maturity</p>
-        <h2 class="section-title" id="catalog-title">Detection catalog</h2>
-        <div class="prose">
-          <p>The rules currently in the pipeline. All of them are at <strong>development</strong> maturity for now.</p>
-        </div>
-        <div class="table-wrap">
-          <table class="data">
-            <caption class="sr-only">Current detection rules with tactic, rule type and maturity</caption>
-            <thead>
-              <tr><th scope="col">Rule</th><th scope="col">Tactic</th><th scope="col">Type</th><th scope="col">Maturity</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Encoded PowerShell Executing Short Concatenation-Obfuscated Script</td><td>Execution</td><td>ES|QL rule</td><td><span class="tag">development</span></td></tr>
-              <tr><td>Kerbrute Credential Brute Force Tool Execution</td><td>Credential Access</td><td>Rule</td><td><span class="tag">development</span></td></tr>
-              <tr><td>Non-Allowlisted Process Read LSASS Memory</td><td>Credential Access</td><td>Rule</td><td><span class="tag">development</span></td></tr>
-              <tr><td>Renamed or Relocated Windows System Binary</td><td>Defense Evasion</td><td>ES|QL rule</td><td><span class="tag">development</span></td></tr>
-              <tr><td>Suspicious Child Process Spawned by Remote Monitoring and Management Tool</td><td>Command and Control</td><td>Rule</td><td><span class="tag">development</span></td></tr>
-              <tr><td>GenAI Desktop Application Execution</td><td>Visibility (shadow-IT tracking)</td><td>Building block, ES|QL</td><td><span class="tag">development</span></td></tr>
-              <tr><td>GenAI Desktop Application Installer Download</td><td>Visibility (shadow-IT tracking)</td><td>Building block, ES|QL</td><td><span class="tag">development</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="footer-note">Most of these are published with their full queries and triage guides in the <a href="../rules/index.html">rule library</a>.</p>
-      </div>
-    </section>
-
     <!-- Stack -->
     <section aria-labelledby="stack-title">
       <div class="container">
@@ -291,24 +286,10 @@
           <li class="tag">Elastic Defend</li>
           <li class="tag">Python</li>
         </ul>
+        <p class="footer-note">The repository is private. If you'd like to see it, it's available on request. <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer">Reach out on LinkedIn</a>.</p>
       </div>
     </section>
 
-    <!-- What's next -->
-    <section aria-labelledby="next-title">
-      <div class="container">
-        <p class="section-eyebrow">index=roadmap <span class="pipe">|</span> where status="planned"</p>
-        <h2 class="section-title" id="next-title">What's next</h2>
-        <div class="prose">
-          <ul>
-            <li>Promote the first rule to production, with replay data and live attack validation.</li>
-            <li>Sigma-based rules for a second SIEM.</li>
-            <li>Cloud and identity detections.</li>
-          </ul>
-          <p>The repository is private. If you'd like to see it, it's available on request. <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer">Reach out on LinkedIn</a>.</p>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
