@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detection-as-Code — Aydan Hodges</title>
+  <meta name="description" content="An end-to-end detection-as-code pipeline in my homelab: every Elastic Security rule is versioned, reviewed, tested, deployed to staging, proven with a real attack, and only then promoted to production.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="aydanhodges.com">
+  <meta property="og:title" content="Detection-as-Code: shipping detections like software">
+  <meta property="og:description" content="Every detection rule versioned, reviewed, tested, deployed to staging, proven with a real attack, and only then promoted to production.">
+  <meta property="og:url" content="https://aydanhodges.com/detection-as-code/">
+  <!-- TODO: add og:image (and switch twitter:card to summary_large_image) once a share image or pipeline screenshot exists, e.g.
+  <meta property="og:image" content="https://aydanhodges.com/assets/images/dac-pipeline-run.png">
+  -->
+  <meta name="twitter:card" content="summary">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="icon" href="../assets/images/white-cross.png" type="image/png">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KXF8Y0DEH6');
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV" target="_blank" rel="noopener noreferrer" aria-label="Proverbs 16:3">
+        <img src="../assets/images/white-cross.png" alt="White cross">
+        <span>aydanhodges.com</span>
+      </a>
+      <nav class="header-links" aria-label="Site links">
+        <a href="../index.html">Home</a>
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg> GitHub</a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg> LinkedIn</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">home</a><span class="sep">/</span>detection-as-code</nav>
+        <p class="hero-kicker">index=detections sourcetype=git <span class="pipe">|</span> where reviewed=true AND tested=true</p>
+        <h1>Detection-as-Code: shipping detections like software.</h1>
+        <p class="hero-sub">I built an end-to-end pipeline in my homelab where every detection rule is versioned, reviewed, tested, deployed to staging, proven with a real attack, and only then promoted to production.</p>
+        <div class="cta-row" style="margin-top:1.75rem;">
+          <a class="btn btn-primary" href="#workflow">See the workflow</a>
+          <a class="btn btn-ghost" href="../rules/index.html">Browse the rule library</a>
+        </div>
+        <p class="footer-note" style="margin-top:1.25rem;">The repository is private. It's available on request.</p>
+      </div>
+    </section>
+
+    <!-- Why it matters -->
+    <section aria-labelledby="why-title">
+      <div class="container">
+        <p class="section-eyebrow">index=siem action=rule_edit <span class="pipe">|</span> where isnull(review) AND isnull(tests)</p>
+        <h2 class="section-title" id="why-title">Why it matters</h2>
+        <div class="prose">
+          <p>In most SIEMs, a rule change is a live edit in a GUI. There's no review, no tests and no history. Over time, what's actually running drifts away from what the team thinks is running.</p>
+          <p>I wanted my detections handled the way good software is: written in files, reviewed before they merge, tested automatically, and shipped through a pipeline that refuses to go further when something is wrong.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- The five ideas -->
+    <section aria-labelledby="ideas-title">
+      <div class="container">
+        <p class="section-eyebrow">index=practices <span class="pipe">|</span> table idea, how_it_applies</p>
+        <h2 class="section-title" id="ideas-title">The five ideas</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <caption class="sr-only">The five software practices applied to detection rules</caption>
+            <thead>
+              <tr><th scope="col">Idea</th><th scope="col">How it applies to detections</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Source of truth</td><td>Rules live in git. The repository, not the SIEM, is where a rule is defined.</td></tr>
+              <tr><td>Code review</td><td>Every change goes through a pull request before it can merge.</td></tr>
+              <tr><td>Continuous integration</td><td>Automated checks run on every pull request.</td></tr>
+              <tr><td>Continuous delivery</td><td>Deploys are automated and staged: staging first, production only after staging succeeds.</td></tr>
+              <tr><td>Drift detection</td><td>A nightly job compares what's running in Kibana with what's in git.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- The workflow -->
+    <section id="workflow" aria-labelledby="workflow-title">
+      <div class="container">
+        <p class="section-eyebrow">index=pipeline <span class="pipe">|</span> transaction rule_id startswith="write" endswith="promote"</p>
+        <h2 class="section-title" id="workflow-title">The workflow</h2>
+
+        <figure class="flow" aria-labelledby="flow-caption">
+          <ol class="flow-steps">
+            <li class="flow-step">
+              <span class="flow-num">01</span>
+              <span class="flow-name">Write the rule</span>
+              <span class="flow-detail">Rule file, test data, ADS doc</span>
+            </li>
+            <li class="flow-step gate">
+              <span class="flow-num">02</span>
+              <span class="flow-name">CI checks</span>
+              <span class="flow-detail">Validation, standards, replay</span>
+              <span class="flow-gate">gate: all must pass</span>
+            </li>
+            <li class="flow-step">
+              <span class="flow-num">03</span>
+              <span class="flow-name">Review &amp; merge</span>
+              <span class="flow-detail">PR checklist, protected main</span>
+            </li>
+            <li class="flow-step">
+              <span class="flow-num">04</span>
+              <span class="flow-name">Deploy to staging</span>
+              <span class="flow-detail">Separate Kibana space</span>
+            </li>
+            <li class="flow-step gate">
+              <span class="flow-num">05</span>
+              <span class="flow-name">Attack &amp; verify</span>
+              <span class="flow-detail">Atomic Red Team test</span>
+              <span class="flow-gate">gate: alert must fire</span>
+            </li>
+            <li class="flow-step">
+              <span class="flow-num">06</span>
+              <span class="flow-name">Promote</span>
+              <span class="flow-detail">Production, updated by rule ID</span>
+            </li>
+          </ol>
+          <p class="flow-loop"><span class="flow-num" aria-hidden="true">↺</span><strong>Nightly drift detection:</strong> compares Kibana with git and opens a GitHub issue for anything that differs.</p>
+          <figcaption id="flow-caption">Figure: the six stages a rule passes through, in order. Steps 2 and 5 are gates where the pipeline stops if the check fails.</figcaption>
+        </figure>
+
+        <div class="info-grid">
+          <div class="info-card reveal">
+            <p class="card-tag">Step 1</p>
+            <h3>Write the rule</h3>
+            <p>Each detection starts as a TOML rule file with its ATT&amp;CK mapping, known false positives and an investigation guide.</p>
+            <p>Alongside it I commit recorded test data (a real attack sample and a benign look-alike) and a short Alerting &amp; Detection Strategy (ADS) doc.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 2</p>
+            <h3>Three CI checks on every pull request</h3>
+            <p>These run on GitHub-hosted runners:</p>
+            <ul>
+              <li><strong>Rule validation:</strong> schema, query syntax, ECS field names and ATT&amp;CK IDs, plus a strict build using the same loader as the deploy.</li>
+              <li><strong>House standards:</strong> my own pytest tests.</li>
+              <li><strong>Replay:</strong> a throwaway Elasticsearch loads the recorded data. The rule must fire on the attack and stay silent on the benign data.</li>
+            </ul>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 3</p>
+            <h3>Review and merge</h3>
+            <p>Every pull request has a checklist covering field behavior, false positives, triage context and severity.</p>
+            <p>The main branch is protected, so merging is blocked until the checks pass. Changes land as squash merges.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 4</p>
+            <h3>Deploy to staging</h3>
+            <p>Merging triggers a deploy from a self-hosted runner inside the lab. The runner only makes outbound connections.</p>
+            <p>It deploys into a separate Kibana staging space using a least-privilege service account.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 5</p>
+            <h3>Attack and verify</h3>
+            <p>For each changed rule with a mapped test, the pipeline runs the matching Atomic Red Team test on a dedicated Windows target, then waits for that rule's alert in staging.</p>
+            <p>No alert means the deploy stops.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 6</p>
+            <h3>Promote to production</h3>
+            <p>Rules reach production only if staging succeeded. They update in place by rule ID.</p>
+          </div>
+        </div>
+
+        <div class="info-card reveal">
+          <p class="card-tag">After it ships</p>
+          <h3>Drift detection</h3>
+          <p>A nightly job compares Kibana with git, looking for GUI edits and for disabled, missing or untracked rules. Anything that differs becomes a GitHub issue.</p>
+        </div>
+
+        <!-- TODO: screenshots (add the image files to assets/images/, then uncomment).
+             Before publishing, check each screenshot for internal IPs, hostnames, usernames,
+             service account names, repo/org names and any other config values, and crop or blur them.
+        <div class="info-grid" style="margin-top:2.5rem;">
+          <figure class="prose" style="margin:0;">
+            <img src="../assets/images/dac-pipeline-run.png" alt="TODO: describe the screenshot, e.g. a GitHub Actions run with every stage passing, from CI checks through staging verification to production" loading="lazy">
+            <figcaption class="footer-note" style="margin-top:0.5rem;">TODO: caption, e.g. A green pipeline run.</figcaption>
+          </figure>
+          <figure class="prose" style="margin:0;">
+            <img src="../assets/images/dac-drift-issue.png" alt="TODO: describe the screenshot, e.g. a GitHub issue opened automatically by the nightly drift check" loading="lazy">
+            <figcaption class="footer-note" style="margin-top:0.5rem;">TODO: caption, e.g. A drift issue opened by the nightly check.</figcaption>
+          </figure>
+        </div>
+        -->
+      </div>
+    </section>
+
+    <!-- Design decisions -->
+    <section aria-labelledby="decisions-title">
+      <div class="container">
+        <p class="section-eyebrow">index=pipeline <span class="pipe">|</span> table decision, reason</p>
+        <h2 class="section-title" id="decisions-title">Design decisions</h2>
+        <div class="prose">
+          <ul>
+            <li><strong>CI runs on GitHub's runners.</strong> Unreviewed code from a pull request never runs near lab credentials. The lab runner only gets involved after a reviewed merge.</li>
+            <li><strong>A separate staging space.</strong> Test alerts from attack verification stay apart from real ones.</li>
+            <li><strong>A least-privilege deploy identity.</strong> The deploy uses a service account that has only the access it needs.</li>
+            <li><strong>Standards enforced as code.</strong> My house standards are pytest tests, so they're checked on every pull request instead of being remembered.</li>
+            <li><strong>Every rule has an ADS doc.</strong> The reasoning behind a detection ships with the detection.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- What it caught -->
+    <section aria-labelledby="caught-title">
+      <div class="container">
+        <p class="section-eyebrow">index=pipeline status=blocked <span class="pipe">|</span> stats count by cause</p>
+        <h2 class="section-title" id="caught-title">What it caught while I built it</h2>
+        <div class="grid">
+          <article class="card reveal">
+            <p class="card-tag">House standards</p>
+            <h3>6 of 7 imported rules failed my standards</h3>
+            <p>They were missing an ATT&amp;CK mapping or false-positive guidance. All six were fixed before anything shipped.</p>
+          </article>
+          <article class="card reveal">
+            <p class="card-tag">Staging gate</p>
+            <h3>1 deploy stopped at staging</h3>
+            <p>A scheduling error that Kibana would have rejected stopped the deploy at staging. Production never changed. I then added a CI build step, so that class of error now fails the pull request instead.</p>
+          </article>
+          <article class="card reveal">
+            <p class="card-tag">ES|QL</p>
+            <h3>3 ES|QL rules brought up to standard</h3>
+            <p>Instead of permanently bypassing the check, I brought them up to Elastic's alert-field (KEEP) standard.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detection catalog -->
+    <section aria-labelledby="catalog-title">
+      <div class="container">
+        <p class="section-eyebrow">index=detections <span class="pipe">|</span> table name, tactic, type, maturity</p>
+        <h2 class="section-title" id="catalog-title">Detection catalog</h2>
+        <div class="prose">
+          <p>The rules currently in the pipeline. All of them are at <strong>development</strong> maturity for now.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="data">
+            <caption class="sr-only">Current detection rules with tactic, rule type and maturity</caption>
+            <thead>
+              <tr><th scope="col">Rule</th><th scope="col">Tactic</th><th scope="col">Type</th><th scope="col">Maturity</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Encoded PowerShell Executing Short Concatenation-Obfuscated Script</td><td>Execution</td><td>ES|QL rule</td><td><span class="tag">development</span></td></tr>
+              <tr><td>Kerbrute Credential Brute Force Tool Execution</td><td>Credential Access</td><td>Rule</td><td><span class="tag">development</span></td></tr>
+              <tr><td>Non-Allowlisted Process Read LSASS Memory</td><td>Credential Access</td><td>Rule</td><td><span class="tag">development</span></td></tr>
+              <tr><td>Renamed or Relocated Windows System Binary</td><td>Defense Evasion</td><td>ES|QL rule</td><td><span class="tag">development</span></td></tr>
+              <tr><td>Suspicious Child Process Spawned by Remote Monitoring and Management Tool</td><td>Command and Control</td><td>Rule</td><td><span class="tag">development</span></td></tr>
+              <tr><td>GenAI Desktop Application Execution</td><td>Visibility (shadow-IT tracking)</td><td>Building block, ES|QL</td><td><span class="tag">development</span></td></tr>
+              <tr><td>GenAI Desktop Application Installer Download</td><td>Visibility (shadow-IT tracking)</td><td>Building block, ES|QL</td><td><span class="tag">development</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="footer-note">Most of these are published with their full queries and triage guides in the <a href="../rules/index.html">rule library</a>.</p>
+      </div>
+    </section>
+
+    <!-- Stack -->
+    <section aria-labelledby="stack-title">
+      <div class="container">
+        <p class="section-eyebrow">index=pipeline <span class="pipe">|</span> stats values(tool)</p>
+        <h2 class="section-title" id="stack-title">Stack</h2>
+        <ul class="tag-row" style="list-style:none; padding:0;" aria-label="Technologies used">
+          <li class="tag">Elastic Security 9.5 (self-managed)</li>
+          <li class="tag">Elastic's detection-rules CLI</li>
+          <li class="tag">GitHub Actions</li>
+          <li class="tag">Atomic Red Team</li>
+          <li class="tag">Elastic Defend</li>
+          <li class="tag">Python</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- What's next -->
+    <section aria-labelledby="next-title">
+      <div class="container">
+        <p class="section-eyebrow">index=roadmap <span class="pipe">|</span> where status="planned"</p>
+        <h2 class="section-title" id="next-title">What's next</h2>
+        <div class="prose">
+          <ul>
+            <li>Promote the first rule to production, with replay data and live attack validation.</li>
+            <li>Sigma-based rules for a second SIEM.</li>
+            <li>Cloud and identity detections.</li>
+          </ul>
+          <p>The repository is private. If you'd like to see it, it's available on request. <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer">Reach out on LinkedIn</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-note">© 2026 Aydan Hodges</p>
+      <div class="footer-links">
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
+      </div>
+    </div>
+  </footer>
+  <script src="../assets/js/site.js"></script>
+</body>
+</html>
