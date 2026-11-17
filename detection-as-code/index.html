@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detection-as-Code — Aydan Hodges</title>
+  <meta name="description" content="An end-to-end detection-as-code pipeline in my homelab: every Elastic Security rule is versioned, reviewed, tested, deployed to staging, proven with a real attack, and only then promoted to production.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="aydanhodges.com">
+  <meta property="og:title" content="Detection-as-Code: shipping detections like software">
+  <meta property="og:description" content="Every detection rule versioned, reviewed, tested, deployed to staging, proven with a real attack, and only then promoted to production.">
+  <meta property="og:url" content="https://aydanhodges.com/detection-as-code/">
+  <!-- TODO: add og:image (and switch twitter:card to summary_large_image) once a share image or pipeline screenshot exists, e.g.
+  <meta property="og:image" content="https://aydanhodges.com/assets/images/dac-pipeline-run.png">
+  -->
+  <meta name="twitter:card" content="summary">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="icon" href="../assets/images/white-cross.png" type="image/png">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KXF8Y0DEH6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-KXF8Y0DEH6');
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="https://www.biblegateway.com/passage/?search=Proverbs%2016:3&version=ESV" target="_blank" rel="noopener noreferrer" aria-label="Proverbs 16:3">
+        <img src="../assets/images/white-cross.png" alt="White cross">
+        <span>aydanhodges.com</span>
+      </a>
+      <nav class="header-links" aria-label="Site links">
+        <a href="../index.html">Home</a>
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg> GitHub</a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg> LinkedIn</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="project-page">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="../index.html">home</a><span class="sep">/</span>detection-as-code</nav>
+        <p class="hero-kicker">index=detections sourcetype=git <span class="pipe">|</span> where reviewed=true AND tested=true</p>
+        <h1>Detection-as-Code: shipping detections like software.</h1>
+        <p class="hero-sub">I built an end-to-end pipeline in my homelab where every detection rule is versioned, reviewed, tested, deployed to staging, proven with a real attack, and only then promoted to production.</p>
+        <div class="cta-row" style="margin-top:1.75rem;">
+          <a class="btn btn-primary" href="#workflow">See the workflow</a>
+          <a class="btn btn-ghost" href="../rules/index.html">Browse the rule library</a>
+        </div>
+        <p class="footer-note" style="margin-top:1.25rem;">The repository is private. It's available on request.</p>
+      </div>
+    </section>
+
+    <!-- Why it matters -->
+    <section aria-labelledby="why-title">
+      <div class="container">
+        <p class="section-eyebrow">index=siem action=rule_edit <span class="pipe">|</span> where isnull(review) AND isnull(tests)</p>
+        <h2 class="section-title" id="why-title">Why it matters</h2>
+        <div class="prose">
+          <p>In most SIEMs, a rule change is a live edit in a GUI. There's no review, no tests and no history. Over time, what's actually running drifts away from what the team thinks is running.</p>
+          <p>I wanted my detections handled the way good software is: written in files, reviewed before they merge, tested automatically, and shipped through a pipeline that refuses to go further when something is wrong.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- The five ideas -->
+    <section aria-labelledby="ideas-title">
+      <div class="container">
+        <p class="section-eyebrow">index=practices <span class="pipe">|</span> table idea, how_it_applies</p>
+        <h2 class="section-title" id="ideas-title">The five ideas</h2>
+        <div class="table-wrap">
+          <table class="data">
+            <caption class="sr-only">The five software practices applied to detection rules</caption>
+            <thead>
+              <tr><th scope="col">Idea</th><th scope="col">How it applies to detections</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Source of truth</td><td>Rules live in git. The repository, not the SIEM, is where a rule is defined.</td></tr>
+              <tr><td>Code review</td><td>Every change goes through a pull request before it can merge.</td></tr>
+              <tr><td>Continuous integration</td><td>Automated checks run on every pull request.</td></tr>
+              <tr><td>Continuous delivery</td><td>Deploys are automated and staged: staging first, production only after staging succeeds.</td></tr>
+              <tr><td>Drift detection</td><td>A nightly job compares what's running in Kibana with what's in git.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- The workflow -->
+    <section id="workflow" aria-labelledby="workflow-title">
+      <div class="container">
+        <p class="section-eyebrow">index=pipeline <span class="pipe">|</span> transaction rule_id startswith="write" endswith="promote"</p>
+        <h2 class="section-title" id="workflow-title">The workflow</h2>
+
+        <figure class="flowchart">
+          <svg class="fc-wide" viewBox="0 0 1040 304" role="img" aria-labelledby="fcw-title fcw-desc">
+            <title id="fcw-title">Detection-as-Code pipeline flowchart</title>
+            <desc id="fcw-desc">A rule is written on a branch, then a pull request runs three CI checks, then it is reviewed and squash merged, then deployed to staging. A decision follows: does the Atomic Red Team test raise the rule's alert? If no, the pipeline stops and production is unchanged. If yes, the rule is promoted to production. A nightly drift check compares production with git.</desc>
+            <defs>
+              <marker id="fcw-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head" d="M0,0 L10,5 L0,10 z"/></marker>
+              <marker id="fcw-arrow-yes" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head yes" d="M0,0 L10,5 L0,10 z"/></marker>
+            </defs>
+            <rect class="fc-box" x="0" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="70" y="116">Branch + rule</text>
+            <text class="fc-sub" x="70" y="134">rule · tests · ADS</text>
+            <path class="fc-edge" d="M140 120 H170" marker-end="url(#fcw-arrow)"/>
+            <rect class="fc-box" x="170" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="240" y="116">PR: 3 CI checks</text>
+            <text class="fc-sub" x="240" y="134">GitHub-hosted</text>
+            <path class="fc-edge" d="M310 120 H340" marker-end="url(#fcw-arrow)"/>
+            <rect class="fc-box" x="340" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="410" y="116">Review + merge</text>
+            <text class="fc-sub" x="410" y="134">squash merge</text>
+            <path class="fc-edge" d="M480 120 H510" marker-end="url(#fcw-arrow)"/>
+            <rect class="fc-box" x="510" y="90" width="140" height="60" rx="8"/>
+            <text class="fc-title" x="580" y="116">Deploy to staging</text>
+            <text class="fc-sub" x="580" y="134">self-hosted runner</text>
+            <path class="fc-edge" d="M650 120 H680" marker-end="url(#fcw-arrow)"/>
+            <polygon class="fc-diamond" points="680,120 750,58 820,120 750,182"/>
+            <text class="fc-title" x="750" y="116">Atomic test</text>
+            <text class="fc-title" x="750" y="135">alerts?</text>
+            <path class="fc-edge" d="M820 120 H852"/>
+            <path class="fc-edge" d="M852 120 V60 H880" marker-end="url(#fcw-arrow)"/>
+            <text class="fc-label" x="860" y="99">no</text>
+            <path class="fc-edge yes" d="M852 120 V180 H880" marker-end="url(#fcw-arrow-yes)"/>
+            <text class="fc-label yes" x="860" y="153">yes</text>
+            <rect class="fc-box stop" x="880" y="30" width="160" height="60" rx="8"/>
+            <text class="fc-title" x="960" y="56">Stop</text>
+            <text class="fc-sub" x="960" y="74">production unchanged</text>
+            <rect class="fc-box accent" x="880" y="150" width="160" height="60" rx="8"/>
+            <text class="fc-title" x="960" y="176">Promote</text>
+            <text class="fc-sub" x="960" y="194">production, by rule ID</text>
+            <rect class="fc-box dashed" x="880" y="242" width="160" height="60" rx="8"/>
+            <text class="fc-title" x="960" y="268">Nightly drift check</text>
+            <text class="fc-sub" x="960" y="286">Kibana vs git</text>
+            <path class="fc-edge dashed" d="M960 242 V210" marker-end="url(#fcw-arrow)"/>
+          </svg>
+          <svg class="fc-tall" viewBox="0 0 340 692" role="img" aria-labelledby="fct-title fct-desc">
+            <title id="fct-title">Detection-as-Code pipeline flowchart</title>
+            <desc id="fct-desc">A rule is written on a branch, then a pull request runs three CI checks, then it is reviewed and squash merged, then deployed to staging. A decision follows: does the Atomic Red Team test raise the rule's alert? If no, the pipeline stops and production is unchanged. If yes, the rule is promoted to production. A nightly drift check compares production with git.</desc>
+            <defs>
+              <marker id="fct-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head" d="M0,0 L10,5 L0,10 z"/></marker>
+              <marker id="fct-arrow-yes" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path class="fc-head yes" d="M0,0 L10,5 L0,10 z"/></marker>
+            </defs>
+            <rect class="fc-box" x="60" y="0" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="24">Branch + rule</text>
+            <text class="fc-sub" x="170" y="42">rule · tests · ADS</text>
+            <path class="fc-edge" d="M170 56 V84" marker-end="url(#fct-arrow)"/>
+            <rect class="fc-box" x="60" y="84" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="108">PR: 3 CI checks</text>
+            <text class="fc-sub" x="170" y="126">GitHub-hosted</text>
+            <path class="fc-edge" d="M170 140 V168" marker-end="url(#fct-arrow)"/>
+            <rect class="fc-box" x="60" y="168" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="192">Review + merge</text>
+            <text class="fc-sub" x="170" y="210">squash merge</text>
+            <path class="fc-edge" d="M170 224 V252" marker-end="url(#fct-arrow)"/>
+            <rect class="fc-box" x="60" y="252" width="220" height="56" rx="8"/>
+            <text class="fc-title" x="170" y="276">Deploy to staging</text>
+            <text class="fc-sub" x="170" y="294">self-hosted runner</text>
+            <path class="fc-edge" d="M170 308 V336" marker-end="url(#fct-arrow)"/>
+            <polygon class="fc-diamond" points="170,336 260,400 170,464 80,400"/>
+            <text class="fc-title" x="170" y="396">Atomic test</text>
+            <text class="fc-title" x="170" y="415">alerts?</text>
+            <path class="fc-edge" d="M170 464 V488"/>
+            <path class="fc-edge" d="M170 488 H85 V520" marker-end="url(#fct-arrow)"/>
+            <text class="fc-label" x="120" y="480">no</text>
+            <path class="fc-edge yes" d="M170 488 H255 V520" marker-end="url(#fct-arrow-yes)"/>
+            <text class="fc-label yes" x="200" y="480">yes</text>
+            <rect class="fc-box stop" x="10" y="520" width="150" height="60" rx="8"/>
+            <text class="fc-title" x="85" y="546">Stop</text>
+            <text class="fc-sub" x="85" y="564">production unchanged</text>
+            <rect class="fc-box accent" x="180" y="520" width="150" height="60" rx="8"/>
+            <text class="fc-title" x="255" y="546">Promote</text>
+            <text class="fc-sub" x="255" y="564">production, by rule ID</text>
+            <rect class="fc-box dashed" x="180" y="630" width="150" height="60" rx="8"/>
+            <text class="fc-title" x="255" y="656">Nightly drift check</text>
+            <text class="fc-sub" x="255" y="674">Kibana vs git</text>
+            <path class="fc-edge dashed" d="M255 630 V580" marker-end="url(#fct-arrow)"/>
+          </svg>
+          <figcaption>Figure: how a rule moves from a branch to production. If the Atomic Red Team test doesn't raise the rule's alert in staging, the pipeline stops and production stays unchanged.</figcaption>
+        </figure>
+
+        <div class="info-grid">
+          <div class="info-card reveal">
+            <p class="card-tag">Step 1</p>
+            <h3>Write the rule</h3>
+            <p>Each detection starts as a TOML rule file with its ATT&amp;CK mapping, known false positives and an investigation guide.</p>
+            <p>Alongside it I commit recorded test data (a real attack sample and a benign look-alike) and a short Alerting &amp; Detection Strategy (ADS) doc.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 2</p>
+            <h3>Three CI checks on every pull request</h3>
+            <p>These run on GitHub-hosted runners:</p>
+            <ul>
+              <li><strong>Rule validation:</strong> schema, query syntax, ECS field names and ATT&amp;CK IDs, plus a strict build using the same loader as the deploy.</li>
+              <li><strong>House standards:</strong> my own pytest tests.</li>
+              <li><strong>Replay:</strong> a throwaway Elasticsearch loads the recorded data. The rule must fire on the attack and stay silent on the benign data.</li>
+            </ul>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 3</p>
+            <h3>Review and merge</h3>
+            <p>Every pull request has a checklist covering field behavior, false positives, triage context and severity.</p>
+            <p>The main branch is protected, so merging is blocked until the checks pass. Changes land as squash merges.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 4</p>
+            <h3>Deploy to staging</h3>
+            <p>Merging triggers a deploy from a self-hosted runner inside the lab. The runner only makes outbound connections.</p>
+            <p>It deploys into a separate Kibana staging space using a least-privilege service account.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 5</p>
+            <h3>Attack and verify</h3>
+            <p>For each changed rule with a mapped test, the pipeline runs the matching Atomic Red Team test on a dedicated Windows target, then waits for that rule's alert in staging.</p>
+            <p>No alert means the deploy stops.</p>
+          </div>
+          <div class="info-card reveal">
+            <p class="card-tag">Step 6</p>
+            <h3>Promote to production</h3>
+            <p>Rules reach production only if staging succeeded. They update in place by rule ID.</p>
+          </div>
+        </div>
+
+        <div class="info-card reveal">
+          <p class="card-tag">After it ships</p>
+          <h3>Drift detection</h3>
+          <p>A nightly job compares Kibana with git, looking for GUI edits and for disabled, missing or untracked rules. Anything that differs becomes a GitHub issue.</p>
+        </div>
+
+        <!-- TODO: screenshots (add the image files to assets/images/, then uncomment).
+             Before publishing, check each screenshot for internal IPs, hostnames, usernames,
+             service account names, repo/org names and any other config values, and crop or blur them.
+        <div class="info-grid" style="margin-top:2.5rem;">
+          <figure class="prose" style="margin:0;">
+            <img src="../assets/images/dac-pipeline-run.png" alt="TODO: describe the screenshot, e.g. a GitHub Actions run with every stage passing, from CI checks through staging verification to production" loading="lazy">
+            <figcaption class="footer-note" style="margin-top:0.5rem;">TODO: caption, e.g. A green pipeline run.</figcaption>
+          </figure>
+          <figure class="prose" style="margin:0;">
+            <img src="../assets/images/dac-drift-issue.png" alt="TODO: describe the screenshot, e.g. a GitHub issue opened automatically by the nightly drift check" loading="lazy">
+            <figcaption class="footer-note" style="margin-top:0.5rem;">TODO: caption, e.g. A drift issue opened by the nightly check.</figcaption>
+          </figure>
+        </div>
+        -->
+      </div>
+    </section>
+
+    <!-- Design decisions -->
+    <section aria-labelledby="decisions-title">
+      <div class="container">
+        <p class="section-eyebrow">index=pipeline <span class="pipe">|</span> table decision, reason</p>
+        <h2 class="section-title" id="decisions-title">Design decisions</h2>
+        <div class="prose">
+          <ul>
+            <li><strong>CI runs on GitHub's runners.</strong> Unreviewed code from a pull request never runs near lab credentials. The lab runner only gets involved after a reviewed merge.</li>
+            <li><strong>A separate staging space.</strong> Test alerts from attack verification stay apart from real ones.</li>
+            <li><strong>A least-privilege deploy identity.</strong> The deploy uses a service account that has only the access it needs.</li>
+            <li><strong>Standards enforced as code.</strong> My house standards are pytest tests, so they're checked on every pull request instead of being remembered.</li>
+            <li><strong>Every rule has an ADS doc.</strong> The reasoning behind a detection ships with the detection.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stack -->
+    <section aria-labelledby="stack-title">
+      <div class="container">
+        <p class="section-eyebrow">index=pipeline <span class="pipe">|</span> stats values(tool)</p>
+        <h2 class="section-title" id="stack-title">Stack</h2>
+        <ul class="tag-row" style="list-style:none; padding:0;" aria-label="Technologies used">
+          <li class="tag">Elastic Security 9.5 (self-managed)</li>
+          <li class="tag">Elastic's detection-rules CLI</li>
+          <li class="tag">GitHub Actions</li>
+          <li class="tag">Atomic Red Team</li>
+          <li class="tag">Elastic Defend</li>
+          <li class="tag">Python</li>
+        </ul>
+        <p class="footer-note">The repository is private. If you'd like to see it, it's available on request. <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer">Reach out on LinkedIn</a>.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p class="footer-note">© 2026 Aydan Hodges</p>
+      <div class="footer-links">
+        <a href="https://github.com/arhodges20" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a href="https://www.linkedin.com/in/aydan-hodges/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
+      </div>
+    </div>
+  </footer>
+  <script src="../assets/js/site.js"></script>
+</body>
+</html>

@@ -60,6 +60,19 @@ a { color: var(--accent); }
 }
 .skip-link:focus { left: 0; }
 
+/* Visually hidden, still read by screen readers (e.g. table captions) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
@@ -555,6 +568,76 @@ table.data tr:hover td { background: var(--surface); }
   margin: 0 0 0.4rem;
 }
 .info-card p { color: var(--muted); font-size: 0.93rem; margin: 0; }
+.info-card p + p { margin-top: 0.6rem; }
+.info-card .card-tag { color: var(--accent); font-size: 0.72rem; margin: 0 0 0.7rem; }
+.info-card ul { color: var(--muted); font-size: 0.93rem; margin: 0.6rem 0 0; padding-left: 1.2rem; }
+.info-card li { margin-bottom: 0.35rem; }
+.info-card li::marker { color: var(--accent); }
+.info-card strong { color: var(--ink); font-weight: 600; }
+
+/* ---------- Flowchart (inline SVG) ----------
+   Two drawings of the same chart: .fc-wide for desktop, .fc-tall for
+   narrow screens. Only one is displayed (and exposed to screen readers). */
+
+.flowchart { margin: 0 0 2.5rem; }
+.flowchart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.flowchart .fc-tall { display: none; max-width: 400px; }
+
+.fc-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.fc-box.accent { stroke: var(--accent); }
+.fc-box.stop { stroke: var(--faint); }
+.fc-box.dashed { stroke: var(--faint); stroke-dasharray: 5 4; fill: none; }
+.fc-diamond { fill: var(--surface-2); stroke: var(--accent); stroke-width: 1.5; }
+
+.fc-title {
+  fill: var(--ink);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+.fc-sub {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-anchor: middle;
+}
+.fc-label {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.fc-label.yes { fill: var(--accent); }
+
+.fc-edge { fill: none; stroke: var(--faint); stroke-width: 1.5; }
+.fc-edge.yes { stroke: var(--accent); }
+.fc-edge.dashed { stroke-dasharray: 3 4; }
+.fc-head { fill: var(--faint); }
+.fc-head.yes { fill: var(--accent); }
+
+.flowchart figcaption {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--faint);
+}
+
+@media (max-width: 900px) {
+  .flowchart .fc-wide { display: none; }
+  .flowchart .fc-tall { display: block; }
+}
+
+/* ---------- Long-form project pages ----------
+   Tighter, even rhythm between sections: trailing margins inside a
+   section are dropped so the gap is set by section padding alone. */
+
+.project-page > section:not(.page-hero) { padding: 3.5rem 0; }
+.project-page > section:not(.page-hero) > .container > :last-child,
+.project-page .prose > :last-child { margin-bottom: 0; }
+.project-page .prose > :last-child > li:last-child { margin-bottom: 0; }
+.project-page .section-title { margin-bottom: 1.5rem; }
+.project-page .tag-row { margin-top: 0; }
+.project-page .info-grid { margin-bottom: 1.25rem; }
 
 /* ---------- Tag pills ---------- */
 
