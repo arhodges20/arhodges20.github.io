@@ -569,121 +569,75 @@ table.data tr:hover td { background: var(--surface); }
 }
 .info-card p { color: var(--muted); font-size: 0.93rem; margin: 0; }
 .info-card p + p { margin-top: 0.6rem; }
-.info-card .card-tag { margin-bottom: 0.7rem; }
+.info-card .card-tag { color: var(--accent); font-size: 0.72rem; margin: 0 0 0.7rem; }
 .info-card ul { color: var(--muted); font-size: 0.93rem; margin: 0.6rem 0 0; padding-left: 1.2rem; }
 .info-card li { margin-bottom: 0.35rem; }
 .info-card li::marker { color: var(--accent); }
 .info-card strong { color: var(--ink); font-weight: 600; }
 
-/* ---------- Pipeline flow diagram (HTML/CSS, no images) ---------- */
+/* ---------- Flowchart (inline SVG) ----------
+   Two drawings of the same chart: .fc-wide for desktop, .fc-tall for
+   narrow screens. Only one is displayed (and exposed to screen readers). */
 
-.flow { margin: 0 0 2.5rem; }
+.flowchart { margin: 0 0 2.5rem; }
+.flowchart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.flowchart .fc-tall { display: none; max-width: 400px; }
 
-.flow-steps {
-  --flow-gap: 1.5rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: var(--flow-gap);
-}
+.fc-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.5; }
+.fc-box.accent { stroke: var(--accent); }
+.fc-box.stop { stroke: var(--faint); }
+.fc-box.dashed { stroke: var(--faint); stroke-dasharray: 5 4; fill: none; }
+.fc-diamond { fill: var(--surface-2); stroke: var(--accent); stroke-width: 1.5; }
 
-.flow-step {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 0.85rem 0.9rem;
-}
-
-/* Connector + arrowhead drawn in the gap before each step */
-.flow-step + .flow-step::before {
-  content: "";
-  position: absolute;
-  left: calc(-1 * var(--flow-gap));
-  top: 50%;
-  width: var(--flow-gap);
-  height: 1px;
-  background: var(--accent);
-}
-.flow-step + .flow-step::after {
-  content: "";
-  position: absolute;
-  left: -8px;
-  top: calc(50% - 3.5px);
-  width: 7px;
-  height: 7px;
-  border-top: 1px solid var(--accent);
-  border-right: 1px solid var(--accent);
-  transform: rotate(45deg);
-}
-
-.flow-num {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--accent);
-  letter-spacing: 0.08em;
-}
-
-.flow-name {
+.fc-title {
+  fill: var(--ink);
   font-family: var(--font-display);
+  font-size: 14px;
   font-weight: 600;
-  font-size: 1rem;
-  line-height: 1.3;
-  color: var(--ink);
+  text-anchor: middle;
 }
-
-.flow-detail {
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: var(--muted);
-}
-
-.flow-gate {
-  margin-top: 0.35rem;
+.fc-sub {
+  fill: var(--muted);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--accent);
+  font-size: 10.5px;
+  text-anchor: middle;
 }
-
-.flow-step.gate { border-color: rgba(229, 164, 75, 0.45); }
-
-.flow-loop {
-  margin: 1.25rem 0 0;
-  border: 1px dashed var(--line);
-  border-radius: var(--radius);
-  padding: 0.75rem 1rem;
-  font-size: 0.88rem;
-  color: var(--muted);
+.fc-label {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
 }
-.flow-loop strong { color: var(--ink); font-weight: 600; }
-.flow-loop .flow-num { margin-right: 0.5rem; }
+.fc-label.yes { fill: var(--accent); }
 
-.flow figcaption {
-  margin-top: 0.75rem;
+.fc-edge { fill: none; stroke: var(--faint); stroke-width: 1.5; }
+.fc-edge.yes { stroke: var(--accent); }
+.fc-edge.dashed { stroke-dasharray: 3 4; }
+.fc-head { fill: var(--faint); }
+.fc-head.yes { fill: var(--accent); }
+
+.flowchart figcaption {
+  margin-top: 1rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--faint);
 }
 
 @media (max-width: 900px) {
-  .flow-steps { --flow-gap: 1.25rem; grid-template-columns: 1fr; }
-  .flow-step + .flow-step::before {
-    left: 1.5rem;
-    top: calc(-1 * var(--flow-gap));
-    width: 1px;
-    height: var(--flow-gap);
-  }
-  .flow-step + .flow-step::after {
-    left: calc(1.5rem - 3px);
-    top: -8px;
-    transform: rotate(135deg);
-  }
+  .flowchart .fc-wide { display: none; }
+  .flowchart .fc-tall { display: block; }
 }
+
+/* ---------- Long-form project pages ----------
+   Tighter, even rhythm between sections: trailing margins inside a
+   section are dropped so the gap is set by section padding alone. */
+
+.project-page > section:not(.page-hero) { padding: 3.5rem 0; }
+.project-page > section:not(.page-hero) > .container > :last-child,
+.project-page .prose > :last-child { margin-bottom: 0; }
+.project-page .prose > :last-child > li:last-child { margin-bottom: 0; }
+.project-page .section-title { margin-bottom: 1.5rem; }
+.project-page .tag-row { margin-top: 0; }
+.project-page .info-grid { margin-bottom: 1.25rem; }
 
 /* ---------- Tag pills ---------- */
 
